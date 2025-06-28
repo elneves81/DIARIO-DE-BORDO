@@ -176,7 +176,7 @@
             </div>
         </div>
 
-        <!-- Scripts -->
+        <!-- Additional Scripts from Child Templates -->
         @stack('scripts')
         
         <!-- UX Enhancements -->

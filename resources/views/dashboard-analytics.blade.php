@@ -334,6 +334,8 @@
 @vite(['resources/js/notifications.js'])
 @vite(['resources/js/advanced-search.js'])
 @endpush
+
+<style>
 .timeline {
     position: relative;
     padding-left: 30px;
