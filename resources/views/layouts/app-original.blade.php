@@ -179,10 +179,8 @@
         <!-- Scripts -->
         @stack('scripts')
         
-        <!-- Core Scripts -->
-        @vite(['resources/css/dark-mode.css', 'resources/js/dark-mode.js'])
-        @vite(['resources/js/notifications.js'])
-        @vite(['resources/js/advanced-search.js'])
+        <!-- UX Enhancements -->
+        @vite(['resources/js/ux-enhancements.js'])
         
         <!-- Service Worker Registration -->
         <script>

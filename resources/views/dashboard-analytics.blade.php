@@ -330,8 +330,10 @@
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
 @vite(['resources/js/dashboard-analytics.js'])
-
-<style>
+@vite(['resources/js/dark-mode.js'])
+@vite(['resources/js/notifications.js'])
+@vite(['resources/js/advanced-search.js'])
+@endpush
 .timeline {
     position: relative;
     padding-left: 30px;
