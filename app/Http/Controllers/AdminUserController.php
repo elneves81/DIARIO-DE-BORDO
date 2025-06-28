@@ -29,6 +29,7 @@ class AdminUserController extends Controller
             'telefone' => 'nullable',
             'cargo' => 'nullable',
             'data_nascimento' => 'nullable|date',
+            'cpf' => 'nullable|string|size:14|unique:users,cpf',
             'is_admin' => 'nullable|boolean',
         ]);
         $senha = substr(bin2hex(random_bytes(4)),0,8);
@@ -39,6 +40,7 @@ class AdminUserController extends Controller
             'telefone' => $request->telefone,
             'cargo' => $request->cargo,
             'data_nascimento' => $request->data_nascimento,
+            'cpf' => $request->cpf,
             'is_admin' => $request->is_admin ? true : false,
             'precisa_trocar_senha' => true,
         ]);
@@ -57,12 +59,13 @@ class AdminUserController extends Controller
         $user = User::findOrFail($id);
         $request->validate([
             'name' => 'required',
-            'email' => 'required|email',
+            'email' => 'required|email|unique:users,email,' . $user->id,
             'telefone' => 'nullable',
             'cargo' => 'nullable',
             'data_nascimento' => 'nullable',
+            'cpf' => 'nullable|string|size:14|unique:users,cpf,' . $user->id,
         ]);
-        $user->update($request->only(['name','email','telefone','cargo','data_nascimento']));
+        $user->update($request->only(['name','email','telefone','cargo','data_nascimento','cpf']));
         return redirect()->route('admin.users.index')->with('success', 'Usuário atualizado!');
     }
 
@@ -82,5 +85,12 @@ class AdminUserController extends Controller
         $user = User::findOrFail($id);
         $user->delete();
         return redirect()->route('admin.users.index')->with('success', 'Usuário excluído!');
+    }
+
+    public function toggleAdmin(User $user)
+    {
+        $user->is_admin = !$user->is_admin;
+        $user->save();
+        return response()->json(['success' => true, 'is_admin' => $user->is_admin]);
     }
 }

@@ -29,4 +29,25 @@ class AdminSugestaoController extends Controller
         $sugestao->delete();
         return redirect()->route('admin.sugestoes.index')->with('success', 'Mensagem excluída com sucesso!');
     }
+
+    public function responder(Request $request, $id)
+    {
+        $request->validate([
+            'resposta' => 'required|string|min:3',
+        ]);
+        
+        $sugestao = \App\Models\Sugestao::findOrFail($id);
+        
+        // Envia e-mail para o usuário SEM salvar a resposta no banco
+        if ($sugestao->user && $sugestao->user->email) {
+            // Cria um objeto temporário com a resposta para o email
+            $sugestaoComResposta = clone $sugestao;
+            $sugestaoComResposta->resposta = $request->resposta;
+            $sugestaoComResposta->respondida_em = now();
+            
+            \Mail::to($sugestao->user->email)->send(new \App\Mail\RespostaSugestaoMail($sugestaoComResposta));
+        }
+        
+        return redirect()->route('admin.sugestoes.index')->with('success', 'Resposta enviada por email com sucesso!');
+    }
 }

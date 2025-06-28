@@ -1,26 +1,19 @@
-<!-- filepath: resources/views/viagens/create.blade.php -->
 @extends('layouts.app')
 
 @section('content')
-<div class="container py-4">
-    <div class="row justify-content-center">
-        <div class="col-12 col-md-8 col-lg-6">
-            <div class="card shadow-lg border-0">
-                <div class="card-header bg-dark text-white text-center">
-                    <h4 class="mb-0">Nova Viagem</h4>
+    <div class="card mx-auto" style="max-width: 700px;">
+        <div class="card-header">
+            <h5 class="mb-0 text-center">Nova Viagem</h5>
+        </div>
+        <div class="card-body">
+            <form action="{{ route('viagens.store') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                @include('viagens.form')
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                    <a href="{{ route('viagens.index') }}" class="btn btn-secondary w-100 w-md-auto me-md-2" tabindex="0" aria-label="Cancelar e voltar para listagem">Cancelar</a>
+                    <button type="submit" class="btn btn-primary w-100 w-md-auto" tabindex="0" aria-label="Salvar nova viagem">Salvar</button>
                 </div>
-                <div class="card-body bg-light">
-                    <form action="{{ route('viagens.store') }}" method="POST">
-                        @csrf
-                        @include('viagens.form')
-                        <div class="d-flex justify-content-center gap-3 mt-4">
-                            <a href="{{ route('viagens.index') }}" class="btn btn-secondary px-4">Cancelar</a>
-                            <button type="submit" class="btn btn-primary px-4">Salvar</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
+            </form>
         </div>
     </div>
-</div>
 @endsection

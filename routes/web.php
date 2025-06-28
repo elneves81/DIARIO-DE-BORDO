@@ -23,14 +23,14 @@ use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
 Route::get('/', function () {
     if (auth()->check()) {
-        return redirect()->route('viagens.create');
+        return redirect()->route('dashboard');
     }
     return redirect()->route('login');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])
+    ->middleware(['auth'])
+    ->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -49,14 +49,19 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/relatorios/viagens/excel', [RelatorioController::class, 'viagensExcel'])->name('relatorios.viagens.excel');
 });
 
-// Sugestões
-Route::post('/sugestoes', [SugestaoController::class, 'store'])->name('sugestoes.store');
+// Sugestões com rate limiting
+Route::post('/sugestoes', [SugestaoController::class, 'store'])
+    ->middleware(['auth', 'throttle:sugestoes'])
+    ->name('sugestoes.store');
 
-// Sugestões/Admin Sugestões
-Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+// Sugestões/Admin Sugestões com middlewares aprimorados
+Route::middleware(['auth', 'admin', 'log.admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::resource('users', App\Http\Controllers\AdminUserController::class);
     Route::post('users/{user}/reset-password', [App\Http\Controllers\AdminUserController::class, 'resetPassword'])->name('users.reset-password');
+    Route::patch('users/{user}/toggle-admin', [App\Http\Controllers\AdminUserController::class, 'toggleAdmin'])->name('users.toggle-admin');
+    Route::post('users/{user}/toggle-admin', [App\Http\Controllers\AdminUserController::class, 'toggleAdmin']);
     Route::resource('sugestoes', App\Http\Controllers\AdminSugestaoController::class)->only(['index', 'destroy']);
+    Route::post('sugestoes/{id}/responder', [App\Http\Controllers\AdminSugestaoController::class, 'responder'])->name('sugestoes.responder');
 });
 
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
@@ -90,3 +95,4 @@ Route::middleware(['auth', 'forcar_troca_senha'])->group(function () {
 // Removido Auth::routes(['verify' => true]); pois não está usando laravel/ui
 
 require __DIR__.'/auth.php';
+require __DIR__.'/debug.php';

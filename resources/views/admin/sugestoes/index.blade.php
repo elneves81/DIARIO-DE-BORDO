@@ -48,13 +48,20 @@
                             <span class="badge bg-secondary">Sugestão</span>
                         @endif
                     </td>
-                    <td style="max-width:300px;white-space:pre-wrap;">{{ $sugestao->mensagem }}</td>
+                    <td style="max-width:300px;white-space:pre-wrap;">
+                        {{ $sugestao->mensagem }}
+                    </td>
                     <td>{{ $sugestao->created_at->format('d/m/Y H:i') }}</td>
                     <td>
-                        <form action="{{ route('admin.sugestoes.destroy', $sugestao->id) }}" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir esta mensagem?');">
+                        <form action="{{ route('admin.sugestoes.destroy', $sugestao->id) }}" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir esta mensagem?');" class="mb-2">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-sm btn-danger">Excluir</button>
+                        </form>
+                        <form action="{{ route('admin.sugestoes.responder', $sugestao->id) }}" method="POST">
+                            @csrf
+                            <textarea name="resposta" class="form-control mb-2" rows="2" placeholder="Digite sua resposta (será enviada por email)..." required></textarea>
+                            <button type="submit" class="btn btn-sm btn-success">Enviar Resposta</button>
                         </form>
                     </td>
                 </tr>

@@ -21,15 +21,26 @@ class Viagem extends Model
         'num_registro_abastecimento',
         'quantidade_abastecida',
         'tipo_veiculo',
-        'placa'
+        'placa',
+        'checklist',
+        'anexos',
+        // 'status' // Novo campo status (removido)
     ];
 
     protected $dates = ['data'];
+
+    protected $casts = [
+        'data' => 'datetime',
+        'checklist' => 'array',
+        'anexos' => 'array', // Cast para anexos
+    ];
 
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    // public function statusLogs() { ... } (removido)
 }
 
 

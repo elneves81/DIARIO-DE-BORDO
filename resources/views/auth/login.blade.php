@@ -45,27 +45,28 @@
             @csrf
             <div class="mb-3">
                 <label for="email" class="form-label">E-mail</label>
-                <input id="email" type="email" name="email" class="form-control text-center @error('email') is-invalid @enderror" value="{{ old('email') }}" required autofocus autocomplete="username">
+                <input id="email" type="email" name="email" class="form-control text-center @error('email') is-invalid @enderror" value="{{ old('email') }}" required autofocus autocomplete="username" tabindex="0" aria-label="E-mail de acesso">
                 @error('email')<div class="invalid-feedback">{{ $message }}</div>@enderror
             </div>
             <div class="mb-3">
                 <label for="password" class="form-label">Senha</label>
-                <input id="password" type="password" name="password" class="form-control text-center @error('password') is-invalid @enderror" required autocomplete="current-password">
+                <input id="password" type="password" name="password" class="form-control text-center @error('password') is-invalid @enderror" required autocomplete="current-password" tabindex="0" aria-label="Senha de acesso">
                 @error('password')<div class="invalid-feedback">{{ $message }}</div>@enderror
             </div>
             <div class="form-check mb-3">
-                <input id="remember_me" type="checkbox" class="form-check-input" name="remember">
+                <input id="remember_me" type="checkbox" class="form-check-input" name="remember" tabindex="0" aria-label="Lembrar-me">
                 <label for="remember_me" class="form-check-label">Lembrar-me</label>
             </div>
             <div class="d-flex justify-content-between align-items-center mb-3">
                 @if (Route::has('register'))
-                    <a href="{{ route('register') }}" class="link-primary">Criar conta</a>
+                    <a href="{{ route('register') }}" class="link-primary" tabindex="0" aria-label="Criar nova conta">Criar conta</a>
                 @endif
                 @if (Route::has('password.request'))
-                    <a href="{{ route('password.request') }}" class="link-secondary">Esqueceu a senha?</a>
+                    <a href="{{ route('password.request') }}" class="link-secondary" tabindex="0" aria-label="Recuperar senha">Esqueceu a senha?</a>
                 @endif
             </div>
-            <button type="submit" class="btn btn-primary w-100 fw-bold py-2">Entrar</button>
+            <button type="submit" class="btn btn-primary w-100 fw-bold py-2" tabindex="0" aria-label="Entrar no sistema">Entrar</button>
+            <a href="{{ url()->previous() }}" class="btn btn-outline-secondary w-100 mt-2" tabindex="0" aria-label="Voltar para a página anterior">Voltar</a>
         </form>
     </div>
     <div class="text-center text-muted mt-4" style="font-size: 0.95em;">

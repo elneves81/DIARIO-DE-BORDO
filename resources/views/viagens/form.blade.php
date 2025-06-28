@@ -1,76 +1,109 @@
 {{-- filepath: resources/views/viagens/form.blade.php --}}
-<div class="row mb-3 justify-content-center">
-    <div class="col-md-3 mb-2">
+<div class="row mb-3 justify-content-center flex-wrap">
+    <div class="col-12">
+        <a href="{{ url()->previous() }}" class="btn btn-outline-secondary mb-3" tabindex="0" aria-label="Voltar para a tela anterior">Voltar</a>
+    </div>
+</div>
+<div class="row mb-3 justify-content-center flex-wrap">
+    <div class="col-12 col-md-3 mb-2">
         <label for="data" class="form-label">Data</label>
-        <input type="date" class="form-control text-center" id="data" name="data" value="{{ old('data', isset($viagem) ? (is_string($viagem->data) ? $viagem->data : $viagem->data->format('Y-m-d')) : '') }}" required>
+        <input type="date" class="form-control text-center w-100" id="data" name="data" value="{{ old('data', isset($viagem) ? (is_string($viagem->data) ? $viagem->data : $viagem->data->format('Y-m-d')) : '') }}" required>
         @error('data')<div class="text-danger small">{{ $message }}</div>@enderror
     </div>
-    <div class="col-md-3 mb-2">
+    <div class="col-12 col-md-3 mb-2">
         <label for="hora_saida" class="form-label"><span style="color:#0d6efd;"><b>Hora Saída</b></span></label>
         <div class="input-group">
-            <input type="text" class="form-control text-center" id="hora_saida" name="hora_saida" placeholder="hh:mm" value="{{ old('hora_saida', isset($viagem) ? (strlen($viagem->hora_saida) > 5 ? substr($viagem->hora_saida, 0, 5) : $viagem->hora_saida) : '') }}" required maxlength="5" pattern="\d{2}:\d{2}">
-            <span class="input-group-text">:</span>
+            <input type="time" class="form-control text-center w-100" id="hora_saida" name="hora_saida" value="{{ old('hora_saida', isset($viagem) ? $viagem->hora_saida : '') }}" required>
         </div>
         @error('hora_saida')<div class="text-danger small">{{ $message }}</div>@enderror
     </div>
-    <div class="col-md-3 mb-2">
+    <div class="col-12 col-md-3 mb-2">
         <label for="km_saida" class="form-label"><span style="color:#0d6efd;"><b>KM Saída</b></span></label>
-        <input type="number" class="form-control text-center" id="km_saida" name="km_saida" value="{{ old('km_saida', isset($viagem) ? $viagem->km_saida : '') }}" required>
+        <input type="number" class="form-control text-center w-100" id="km_saida" name="km_saida" value="{{ old('km_saida', isset($viagem) ? $viagem->km_saida : '') }}" required>
         @error('km_saida')<div class="text-danger small">{{ $message }}</div>@enderror
     </div>
 </div>
-<div class="row mb-3 justify-content-center">
-    <div class="col-md-6 mb-2">
+<div class="row mb-3 justify-content-center flex-wrap">
+    <div class="col-12 col-md-6 mb-2">
         <label for="destino" class="form-label">Destino</label>
-        <input type="text" class="form-control text-center" id="destino" name="destino" placeholder="Ex: Centro, Bairro, Cidade" value="{{ old('destino', isset($viagem) ? $viagem->destino : '') }}" required>
+        <input type="text" class="form-control text-center w-100" id="destino" name="destino" placeholder="Ex: Centro, Bairro, Cidade" value="{{ old('destino', isset($viagem) ? $viagem->destino : '') }}" required>
         @error('destino')<div class="text-danger small">{{ $message }}</div>@enderror
     </div>
 </div>
-<div class="row mb-3 justify-content-center">
-    <div class="col-md-3 mb-2">
-        <label for="hora_chegada" class="form-label"><span style="color:#198754;"><b>Hora Chegada</b></span></label>
+<div class="row mb-3 justify-content-center flex-wrap">
+    <div class="col-12 col-md-3 mb-2">
+        <label for="hora_chegada" class="form-label"><span style="color:#198754;"><b>Hora Chegada</b></span> <small class="text-muted">(opcional)</small></label>
         <div class="input-group">
-            <input type="text" class="form-control text-center" id="hora_chegada" name="hora_chegada" placeholder="hh:mm" value="{{ old('hora_chegada', isset($viagem) ? (strlen($viagem->hora_chegada) > 5 ? substr($viagem->hora_chegada, 0, 5) : $viagem->hora_chegada) : '') }}" @if(!isset($viagem)) maxlength="5" pattern="\d{2}:\d{2}" @else required maxlength="5" pattern="\d{2}:\d{2}" @endif>
-            <span class="input-group-text">:</span>
+            <input type="time" class="form-control text-center w-100" id="hora_chegada" name="hora_chegada" value="{{ old('hora_chegada', isset($viagem) ? $viagem->hora_chegada : '') }}">
         </div>
         @error('hora_chegada')<div class="text-danger small">{{ $message }}</div>@enderror
     </div>
-    <div class="col-md-3 mb-2">
+    <div class="col-12 col-md-3 mb-2">
         <label for="km_chegada" class="form-label"><span style="color:#198754;"><b>KM Chegada</b></span></label>
-        <input type="number" class="form-control text-center" id="km_chegada" name="km_chegada" value="{{ old('km_chegada', isset($viagem) ? $viagem->km_chegada : '') }}" @if(!isset($viagem)) @else required @endif>
+        <input type="number" class="form-control text-center w-100" id="km_chegada" name="km_chegada" value="{{ old('km_chegada', isset($viagem) ? $viagem->km_chegada : '') }}" @if(!isset($viagem)) @else required @endif>
         @error('km_chegada')<div class="text-danger small">{{ $message }}</div>@enderror
     </div>
 </div>
-<div class="row mb-3 justify-content-center">
-    <div class="col-md-6 mb-2">
+<div class="row mb-3 justify-content-center flex-wrap">
+    <div class="col-12 col-md-6 mb-2">
         <label for="condutor" class="form-label">Condutor</label>
-        <input type="text" class="form-control text-center" id="condutor" name="condutor" value="{{ old('condutor', isset($viagem) ? ($viagem->user ? $viagem->user->name : $viagem->condutor) : (Auth::user() ? Auth::user()->name : '')) }}" required readonly>
+        <input type="text" class="form-control text-center w-100" id="condutor" name="condutor" value="{{ old('condutor', isset($viagem) ? ($viagem->user ? $viagem->user->name : $viagem->condutor) : (Auth::user() ? Auth::user()->name : '')) }}" required readonly>
         <input type="hidden" name="user_id" value="{{ isset($viagem) && $viagem->user ? $viagem->user->id : (Auth::user() ? Auth::user()->id : '') }}">
         @error('condutor')<div class="text-danger small">{{ $message }}</div>@enderror
     </div>
 </div>
-<div class="row mb-3 justify-content-center">
-    <div class="col-md-3 mb-2">
+<div class="row mb-3 justify-content-center flex-wrap">
+    <div class="col-12 col-md-3 mb-2">
         <label for="num_registro_abastecimento" class="form-label">Nº Reg. Abastecimento</label>
-        <input type="text" class="form-control text-center" id="num_registro_abastecimento" name="num_registro_abastecimento" value="{{ old('num_registro_abastecimento', isset($viagem) ? $viagem->num_registro_abastecimento : '') }}">
+        <input type="text" class="form-control text-center w-100" id="num_registro_abastecimento" name="num_registro_abastecimento" value="{{ old('num_registro_abastecimento', isset($viagem) ? $viagem->num_registro_abastecimento : '') }}">
         @error('num_registro_abastecimento')<div class="text-danger small">{{ $message }}</div>@enderror
     </div>
-    <div class="col-md-3 mb-2">
+    <div class="col-12 col-md-3 mb-2">
         <label for="quantidade_abastecida" class="form-label">Qtd. Abastecida (L)</label>
-        <input type="number" step="0.01" class="form-control text-center" id="quantidade_abastecida" name="quantidade_abastecida" value="{{ old('quantidade_abastecida', isset($viagem) ? $viagem->quantidade_abastecida : '') }}">
+        <input type="number" step="0.01" class="form-control text-center w-100" id="quantidade_abastecida" name="quantidade_abastecida" value="{{ old('quantidade_abastecida', isset($viagem) ? $viagem->quantidade_abastecida : '') }}">
         @error('quantidade_abastecida')<div class="text-danger small">{{ $message }}</div>@enderror
     </div>
 </div>
-<div class="row mb-3 justify-content-center">
-    <div class="col-md-3 mb-2">
+<div class="row mb-3 justify-content-center flex-wrap">
+    <div class="col-12 col-md-3 mb-2">
         <label for="tipo_veiculo" class="form-label">Tipo de Veículo</label>
-        <input type="text" class="form-control text-center" id="tipo_veiculo" name="tipo_veiculo" value="{{ old('tipo_veiculo', isset($viagem) ? $viagem->tipo_veiculo : '') }}">
+        <input type="text" class="form-control text-center w-100" id="tipo_veiculo" name="tipo_veiculo" value="{{ old('tipo_veiculo', isset($viagem) ? $viagem->tipo_veiculo : '') }}">
         @error('tipo_veiculo')<div class="text-danger small">{{ $message }}</div>@enderror
     </div>
-    <div class="col-md-3 mb-2">
+    <div class="col-12 col-md-3 mb-2">
         <label for="placa" class="form-label">Placa</label>
-        <input type="text" class="form-control text-center" id="placa" name="placa" value="{{ old('placa', isset($viagem) ? $viagem->placa : '') }}">
+        <input type="text" class="form-control text-center w-100" id="placa" name="placa" value="{{ old('placa', isset($viagem) ? $viagem->placa : '') }}">
         @error('placa')<div class="text-danger small">{{ $message }}</div>@enderror
+    </div>
+</div>
+<div class="row mb-3 justify-content-center flex-wrap">
+    <div class="col-12 col-md-8 mb-2">
+        <label class="form-label">Checklist Pré-Viagem</label>
+        <div class="d-flex flex-column flex-md-row flex-wrap gap-2">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="checklist[documentos]" id="check_documentos" value="1" {{ old('checklist.documentos') ? 'checked' : '' }}>
+                <label class="form-check-label" for="check_documentos">Documentos do veículo em dia</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="checklist[manutencao]" id="check_manutencao" value="1" {{ old('checklist.manutencao') ? 'checked' : '' }}>
+                <label class="form-check-label" for="check_manutencao">Manutenção preventiva realizada</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="checklist[abastecimento]" id="check_abastecimento" value="1" {{ old('checklist.abastecimento') ? 'checked' : '' }}>
+                <label class="form-check-label" for="check_abastecimento">Abastecimento suficiente</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="checklist[epc]" id="check_epc" value="1" {{ old('checklist.epc') ? 'checked' : '' }}>
+                <label class="form-check-label" for="check_epc">Equipamentos de proteção (EPC) conferidos</label>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row mb-3 justify-content-center flex-wrap">
+    <div class="col-12 col-md-8 mb-2">
+        <label for="anexos" class="form-label">Anexos (fotos, recibos, comprovantes)</label>
+        <input type="file" class="form-control w-100" id="anexos" name="anexos[]" multiple accept="image/*,application/pdf">
+        <small class="text-muted">Você pode anexar imagens ou PDFs. Tamanho máximo por arquivo: 2MB.</small>
     </div>
 </div>
 
@@ -92,6 +125,24 @@ document.addEventListener('DOMContentLoaded', function () {
     const horaChegada = document.getElementById('hora_chegada');
     if (horaSaida) autoFormatHora(horaSaida);
     if (horaChegada) autoFormatHora(horaChegada);
+});
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const dataInput = document.getElementById('data');
+    if (dataInput) {
+        const hoje = new Date().toISOString().split('T')[0];
+        dataInput.value = hoje;
+        dataInput.setAttribute('max', hoje);
+        dataInput.setAttribute('min', hoje);
+        dataInput.addEventListener('input', function() {
+            if (this.value !== hoje) {
+                this.setCustomValidity('Você não pode agendar essa viagem. A data precisa ser de Hoje!!');
+            } else {
+                this.setCustomValidity('');
+            }
+        });
+    }
 });
 </script>
 @endpush
