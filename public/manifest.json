@@ -1,12 +1,15 @@
 {
     "name": "Diário de Bordo",
     "short_name": "DiárioBordo",
-    "description": "Sistema de registro de viagens e controle de quilometragem",
+    "description": "Sistema de Gerenciamento de Viagens Corporativas",
     "start_url": "/",
     "display": "standalone",
     "background_color": "#ffffff",
     "theme_color": "#007bff",
     "orientation": "portrait-primary",
+    "scope": "/",
+    "lang": "pt-BR",
+    "categories": ["business", "productivity", "travel"],
     "icons": [
         {
             "src": "/img/icon-192.png",
