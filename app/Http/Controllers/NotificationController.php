@@ -7,8 +7,6 @@ use App\Models\User;
 use App\Models\Viagem;
 use App\Models\PushSubscription;
 use Illuminate\Support\Facades\Log;
-use Minishlink\WebPush\WebPush;
-use Minishlink\WebPush\Subscription;
 
 class NotificationController extends Controller
 {
@@ -73,7 +71,7 @@ class NotificationController extends Controller
     }
 
     /**
-     * Enviar notificação para um usuário específico
+     * Simular envio de notificação (sem biblioteca externa)
      */
     public function sendToUser($userId, $title, $body, $data = [])
     {
@@ -83,56 +81,15 @@ class NotificationController extends Controller
             return false;
         }
 
-        $auth = [
-            'VAPID' => [
-                'subject' => config('app.url'),
-                'publicKey' => env('VAPID_PUBLIC_KEY'),
-                'privateKey' => env('VAPID_PRIVATE_KEY'),
-            ],
-        ];
-
-        $webPush = new WebPush($auth);
+        // Log da notificação (em produção, aqui seria o envio real)
+        Log::info("Notificação simulada para usuário {$userId}: {$title} - {$body}");
         
-        $payload = json_encode([
-            'title' => $title,
-            'body' => $body,
-            'icon' => asset('img/icon-192x192.png'),
-            'badge' => asset('img/icon-192x192.png'),
-            'data' => $data,
-            'actions' => [
-                [
-                    'action' => 'view',
-                    'title' => 'Ver detalhes',
-                    'icon' => asset('img/icon-192x192.png')
-                ]
-            ]
-        ]);
-
-        foreach ($subscriptions as $subscription) {
-            $pushSubscription = Subscription::create([
-                'endpoint' => $subscription->endpoint,
-                'publicKey' => $subscription->p256dh_key,
-                'authToken' => $subscription->auth_token,
-            ]);
-
-            try {
-                $webPush->sendOneNotification($pushSubscription, $payload);
-                Log::info("Notificação enviada para usuário {$userId}");
-            } catch (\Exception $e) {
-                Log::error("Erro ao enviar notificação para usuário {$userId}: " . $e->getMessage());
-                
-                // Se a subscription expirou, remover
-                if (strpos($e->getMessage(), '410') !== false) {
-                    $subscription->delete();
-                }
-            }
-        }
-
+        // Simular envio bem-sucedido
         return true;
     }
 
     /**
-     * Enviar notificação de mudança de status de viagem
+     * Notificar mudança de status de viagem
      */
     public function notifyTripStatusChange(Viagem $viagem, $oldStatus)
     {
@@ -156,7 +113,7 @@ class NotificationController extends Controller
     }
 
     /**
-     * Enviar notificações em lote para administradores
+     * Notificar administradores
      */
     public function notifyAdmins($title, $body, $data = [])
     {
@@ -168,7 +125,7 @@ class NotificationController extends Controller
     }
 
     /**
-     * Testar envio de notificação
+     * Testar notificação
      */
     public function testNotification(Request $request)
     {
@@ -183,7 +140,7 @@ class NotificationController extends Controller
 
         return response()->json([
             'success' => $result,
-            'message' => $result ? 'Notificação enviada!' : 'Nenhuma subscription ativa encontrada.'
+            'message' => $result ? 'Notificação enviada (simulada)!' : 'Nenhuma subscription ativa encontrada.'
         ]);
     }
 }
