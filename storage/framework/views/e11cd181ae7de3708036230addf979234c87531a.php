@@ -1,12 +1,7 @@
-@extends('layouts.app-original')
 
-@push('styles')
-<link rel="stylesheet" href="{{ asset('css/the            <button id="refreshDashboard" class="btn btn-light btn-sm">
-                <i class="bi bi-arrow-clockwise"></i> Atualizar
-            </button>
-            <small id="lastRefresh" class="text-light opacity-75 ms-3">
-                Carregando...
-            </small>enhancements.css') }}">
+
+<?php $__env->startPush('styles'); ?>
+<link rel="stylesheet" href="<?php echo e(asset('css/theme-enhancements.css')); ?>">
 <style>
 .dashboard-card {
     transition: all 0.3s ease;
@@ -91,9 +86,9 @@
     font-weight: 600;
 }
 </style>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="container-fluid px-3">
     <!-- Header do Dashboard -->
     <div class="dashboard-header text-center">
@@ -116,42 +111,42 @@
         <div class="col-lg-2 col-md-4 col-sm-6">
             <div class="kpi-card">
                 <i class="bi bi-airplane-fill metric-icon"></i>
-                <div id="totalTrips" class="kpi-number" data-kpi="totalTrips">0</div>
+                <div id="totalTrips" class="kpi-number">0</div>
                 <div class="kpi-label">Total de Viagens</div>
             </div>
         </div>
         <div class="col-lg-2 col-md-4 col-sm-6">
             <div class="kpi-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
                 <i class="bi bi-geo-alt-fill metric-icon"></i>
-                <div id="totalDistance" class="kpi-number" data-kpi="totalDistance">0</div>
+                <div id="totalDistance" class="kpi-number">0</div>
                 <div class="kpi-label">Distância Total</div>
             </div>
         </div>
         <div class="col-lg-2 col-md-4 col-sm-6">
             <div class="kpi-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
                 <i class="bi bi-currency-dollar metric-icon"></i>
-                <div id="totalExpenses" class="kpi-number" data-kpi="totalExpenses">0</div>
+                <div id="totalExpenses" class="kpi-number">0</div>
                 <div class="kpi-label">Gastos Totais</div>
             </div>
         </div>
         <div class="col-lg-2 col-md-4 col-sm-6">
             <div class="kpi-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
                 <i class="bi bi-clock-fill metric-icon"></i>
-                <div id="avgTripDuration" class="kpi-number" data-kpi="avgTripDuration">0</div>
+                <div id="avgTripDuration" class="kpi-number">0</div>
                 <div class="kpi-label">Duração Média</div>
             </div>
         </div>
         <div class="col-lg-2 col-md-4 col-sm-6">
             <div class="kpi-card" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
                 <i class="bi bi-check-circle-fill metric-icon"></i>
-                <div id="approvalRate" class="kpi-number" data-kpi="approvalRate">0</div>
+                <div id="approvalRate" class="kpi-number">0</div>
                 <div class="kpi-label">Taxa Aprovação</div>
             </div>
         </div>
         <div class="col-lg-2 col-md-4 col-sm-6">
             <div class="kpi-card" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); color: #333;">
                 <i class="bi bi-graph-up-arrow metric-icon"></i>
-                <div id="monthlyGrowth" class="kpi-number" data-kpi="monthlyGrowth">0</div>
+                <div id="monthlyGrowth" class="kpi-number">0</div>
                 <div class="kpi-label">Crescimento Mensal</div>
             </div>
         </div>
@@ -277,13 +272,13 @@
                 </div>
                 <div class="card-body">
                     <div class="d-grid gap-2">
-                        <a href="{{ route('viagens.create') }}" class="btn btn-primary">
+                        <a href="<?php echo e(route('viagens.create')); ?>" class="btn btn-primary">
                             <i class="bi bi-plus-circle me-2"></i>Nova Viagem
                         </a>
-                        <a href="{{ route('viagens.index') }}" class="btn btn-outline-primary">
+                        <a href="<?php echo e(route('viagens.index')); ?>" class="btn btn-outline-primary">
                             <i class="bi bi-list-ul me-2"></i>Ver Todas as Viagens
                         </a>
-                        <a href="{{ route('relatorios.index') }}" class="btn btn-outline-secondary">
+                        <a href="<?php echo e(route('relatorios.index')); ?>" class="btn btn-outline-secondary">
                             <i class="bi bi-file-earmark-text me-2"></i>Relatórios
                         </a>
                     </div>
@@ -302,13 +297,27 @@
                     </h5>
                 </div>
                 <div class="card-body">
-                    <div id="recentActivityList">
-                        <!-- Atividade recente será carregada via JavaScript -->
-                        <div class="text-center text-muted py-3">
-                            <div class="spinner-border spinner-border-sm me-2" role="status">
-                                <span class="visually-hidden">Carregando...</span>
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-success"></div>
+                            <div class="timeline-content">
+                                <h6 class="mb-1">Viagem para São Paulo aprovada</h6>
+                                <small class="text-muted">Há 2 horas</small>
                             </div>
-                            Carregando atividades...
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-warning"></div>
+                            <div class="timeline-content">
+                                <h6 class="mb-1">Nova solicitação de viagem criada</h6>
+                                <small class="text-muted">Há 4 horas</small>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-info"></div>
+                            <div class="timeline-content">
+                                <h6 class="mb-1">Relatório de despesas enviado</h6>
+                                <small class="text-muted">Ontem</small>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -316,14 +325,14 @@
         </div>
     </div>
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
-@vite(['resources/js/dashboard-analytics.js'])
-@vite(['resources/js/dark-mode.js'])
-@vite(['resources/js/notifications.js'])
-@vite(['resources/js/advanced-search.js'])
+<?php echo app('Illuminate\Foundation\Vite')(['resources/js/dashboard-analytics.js']); ?>
+<?php echo app('Illuminate\Foundation\Vite')(['resources/js/dark-mode.js']); ?>
+<?php echo app('Illuminate\Foundation\Vite')(['resources/js/notifications.js']); ?>
+<?php echo app('Illuminate\Foundation\Vite')(['resources/js/advanced-search.js']); ?>
 
 <style>
 .timeline {
@@ -374,4 +383,6 @@
     background: #4b5563;
 }
 </style>
-@endpush
+<?php $__env->stopPush(); ?>
+
+<?php echo $__env->make('layouts.app-original', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\Users\Elber\Documents\GitHub\prototipoSite\diario-bordo\resources\views/dashboard-analytics.blade.php ENDPATH**/ ?>

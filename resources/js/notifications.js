@@ -122,6 +122,9 @@ class PushNotificationManager {
             // Enviar subscription para o servidor
             await this.sendSubscriptionToServer(subscription);
             
+            // Buscar notificações pendentes
+            this.fetchPendingNotifications();
+            
             console.log('Inscrito nas notificações:', subscription);
         } catch (error) {
             console.error('Erro ao se inscrever nas notificações:', error);
@@ -148,7 +151,37 @@ class PushNotificationManager {
 
             console.log('Subscription registrada no servidor');
         } catch (error) {
-            console.error('Erro ao registrar subscription:', error);
+            console.error('Erro ao registrar subscription no servidor:', error);
+        }
+    }
+
+    async fetchPendingNotifications() {
+        try {
+            const response = await fetch('/api/analytics/notifications', {
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            });
+
+            if (response.ok) {
+                const notifications = await response.json();
+                this.displayNotifications(notifications);
+            }
+        } catch (error) {
+            console.error('Erro ao buscar notificações:', error);
+        }
+    }
+
+    displayNotifications(notifications) {
+        const badge = document.getElementById('notification-badge');
+        if (badge && notifications.length > 0) {
+            badge.textContent = notifications.length;
+            badge.style.display = 'block';
+            
+            // Mostrar últimas notificações
+            notifications.slice(0, 3).forEach(notification => {
+                this.showNotification(notification.title, notification.body, notification.data);
+            });
         }
     }
 

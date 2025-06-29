@@ -31,73 +31,80 @@ function loadChartJS() {
 }
 
 function renderCharts() {
-    // Dados de exemplo - em produção viriam do backend
-    const dashboardData = getDashboardData();
-    
-    // Gráfico de viagens por status
-    renderStatusChart(dashboardData.statusData);
-    
-    // Gráfico de viagens por mês
-    renderMonthlyChart(dashboardData.monthlyData);
-    
-    // Gráfico de destinos mais visitados
-    renderDestinationsChart(dashboardData.destinationsData);
-    
-    // Gráfico de gastos por categoria
-    renderExpensesChart(dashboardData.expensesData);
-    
-    // Gráfico de linha temporal
-    renderTimelineChart(dashboardData.timelineData);
-    
-    // KPIs animados
-    renderKPIs(dashboardData.kpis);
+    // Buscar dados reais do backend
+    loadDashboardData().then(dashboardData => {
+        // Gráfico de viagens por status
+        renderStatusChart(dashboardData.charts.statusData);
+        
+        // Gráfico de viagens por mês
+        renderMonthlyChart(dashboardData.charts.monthlyData);
+        
+        // Gráfico de destinos mais visitados
+        renderDestinationsChart(dashboardData.charts.destinationsData);
+        
+        // Gráfico de gastos por categoria
+        renderExpensesChart(dashboardData.charts.expensesData);
+        
+        // Gráfico de linha temporal
+        renderTimelineChart(dashboardData.charts.timelineData);
+        
+        // KPIs animados
+        renderKPIs(dashboardData.kpis);
+        
+        // Atividade recente
+        renderRecentActivity(dashboardData.recentActivity);
+        
+        // Atualizar timestamp
+        updateLastRefresh(dashboardData.lastUpdated);
+    }).catch(error => {
+        console.error('Erro ao carregar dados do dashboard:', error);
+        showErrorFallback();
+    });
 }
 
-function getDashboardData() {
-    // Simular dados do backend - substituir por requisição AJAX real
-    return {
-        statusData: {
-            approved: 15,
-            pending: 8,
-            rejected: 3,
-            draft: 5
-        },
-        monthlyData: {
-            labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
-            datasets: [
-                {
-                    label: 'Viagens Realizadas',
-                    data: [3, 5, 2, 8, 6, 4],
-                    backgroundColor: 'rgba(59, 130, 246, 0.8)'
-                },
-                {
-                    label: 'Viagens Pendentes',
-                    data: [1, 2, 4, 1, 3, 2],
-                    backgroundColor: 'rgba(245, 158, 11, 0.8)'
-                }
-            ]
-        },
-        destinationsData: {
-            labels: ['São Paulo', 'Rio de Janeiro', 'Brasília', 'Salvador', 'Recife'],
-            data: [12, 8, 6, 4, 3]
-        },
-        expensesData: {
-            labels: ['Hospedagem', 'Transporte', 'Alimentação', 'Combustível', 'Outros'],
-            data: [35, 25, 20, 15, 5]
-        },
-        timelineData: {
-            labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
-            cumulative: [3, 8, 10, 18, 24, 28],
-            monthly: [3, 5, 2, 8, 6, 4]
-        },
-        kpis: {
-            totalTrips: 31,
-            totalDistance: 15420,
-            totalExpenses: 52000,
-            avgTripDuration: 3.2,
-            approvalRate: 89,
-            monthlyGrowth: 12
+// Buscar dados reais do backend
+async function loadDashboardData() {
+    try {
+        const response = await fetch('/api/analytics/dashboard', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
+        
+        return await response.json();
+    } catch (error) {
+        console.error('Erro ao buscar dados do dashboard:', error);
+        // Retornar dados de fallback se a API falhar
+        return getFallbackData();
+    }
+}
+
+// Dados de fallback em caso de erro na API
+function getFallbackData() {
+    return {
+        kpis: {
+            totalTrips: 0,
+            totalDistance: 0,
+            totalExpenses: 0,
+            avgTripDuration: 0,
+            approvalRate: 0,
+            monthlyGrowth: 0
+        },
+        charts: {
+            statusData: { approved: 0, pending: 0, rejected: 0, draft: 0 },
+            monthlyData: { labels: [], datasets: [] },
+            destinationsData: { labels: ['Sem dados'], data: [1] },
+            expensesData: { labels: ['Sem dados'], data: [100] },
+            timelineData: { labels: [], cumulative: [], monthly: [] }
+        },
+        recentActivity: [],
+        lastUpdated: new Date().toISOString()
     };
 }
 
@@ -437,20 +444,70 @@ function initializeDataRefresh() {
 }
 
 function refreshDashboardData() {
-    // Em produção, fazer requisição AJAX para buscar novos dados
     console.log('Atualizando dados do dashboard...');
     
-    // Simular atualização
-    const newData = getDashboardData();
-    
-    // Re-renderizar gráficos com novos dados
+    // Destruir gráficos existentes
     Chart.helpers.each(Chart.instances, function(instance) {
         instance.destroy();
     });
     
+    // Recarregar dados e renderizar novamente
     setTimeout(() => {
         renderCharts();
     }, 500);
+}
+
+function renderRecentActivity(activities) {
+    const activityList = document.getElementById('recentActivityList');
+    if (!activityList || !Array.isArray(activities)) return;
+    
+    activityList.innerHTML = '';
+    
+    if (activities.length === 0) {
+        activityList.innerHTML = '<div class="text-center text-muted py-3">Nenhuma atividade recente</div>';
+        return;
+    }
+    
+    activities.forEach(activity => {
+        const activityItem = document.createElement('div');
+        activityItem.className = 'd-flex align-items-center mb-3';
+        activityItem.innerHTML = `
+            <div class="flex-shrink-0">
+                <div class="activity-icon ${activity.icon}" style="width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                    <i class="bi bi-geo-alt text-white"></i>
+                </div>
+            </div>
+            <div class="flex-grow-1 ms-3">
+                <h6 class="mb-1">${activity.title}</h6>
+                <p class="text-muted mb-0 small">${activity.subtitle} - ${activity.user}</p>
+            </div>
+        `;
+        activityList.appendChild(activityItem);
+    });
+}
+
+function showErrorFallback() {
+    const dashboard = document.querySelector('.dashboard-analytics');
+    if (dashboard) {
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'alert alert-warning';
+        errorDiv.innerHTML = `
+            <h6><i class="bi bi-exclamation-triangle"></i> Aviso</h6>
+            <p>Não foi possível carregar os dados mais recentes. Exibindo dados em cache.</p>
+            <button class="btn btn-sm btn-outline-warning" onclick="renderCharts()">
+                <i class="bi bi-arrow-clockwise"></i> Tentar novamente
+            </button>
+        `;
+        dashboard.prepend(errorDiv);
+    }
+}
+
+function updateLastRefresh(timestamp) {
+    const lastRefreshElement = document.getElementById('lastRefresh');
+    if (lastRefreshElement && timestamp) {
+        const date = new Date(timestamp);
+        lastRefreshElement.textContent = `Última atualização: ${date.toLocaleString('pt-BR')}`;
+    }
 }
 
 // Exportar funções para uso global

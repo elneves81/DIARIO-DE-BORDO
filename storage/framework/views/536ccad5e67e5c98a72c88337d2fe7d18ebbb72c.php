@@ -1,0 +1,95 @@
+
+
+<?php $__env->startSection('content'); ?>
+<div class="container py-4">
+    <div class="d-flex align-items-center gap-3 mb-4">
+        <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:44px;height:44px;background:linear-gradient(135deg,#4e54c8 0%,#8f94fb 100%);color:#fff;">
+            <i class="bi bi-people-fill fs-4"></i>
+        </div>
+        <h3 class="mb-0 fw-bold" style="color:#4e54c8;">Gerenciamento de Usuários</h3>
+    </div>
+    <?php if(session('success')): ?>
+        <div class="alert alert-success d-flex align-items-center gap-2"><i class="bi bi-check-circle-fill"></i> <?php echo e(session('success')); ?></div>
+    <?php endif; ?>
+    <div class="card shadow border-0 rounded-4" style="background: #f8fafd;">
+        <div class="card-body">
+            <table class="table table-bordered align-middle text-center shadow-sm rounded-3 overflow-hidden" style="background:#fff;">
+                <thead style="background:linear-gradient(90deg,#4e54c8 0%,#8f94fb 100%);color:#fff;">
+                    <tr>
+                        <th>Nome</th>
+                        <th>Email</th>
+                        <th>Cargo</th>
+                        <th>Telefone</th>
+                        <th>CPF</th>
+                        <th>Admin</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php $__currentLoopData = $users; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $user): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <tr style="background:<?php echo e($loop->even ? '#f8fafd' : '#fff'); ?>;">
+                        <td class="fw-semibold"><?php echo e($user->name); ?></td>
+                        <td><?php echo e($user->email); ?></td>
+                        <td><?php echo e($user->cargo); ?></td>
+                        <td><?php echo e($user->telefone); ?></td>
+                        <td><?php echo e(maskCpfBlade($user->cpf)); ?></td>
+                        <td>
+                            <button type="button" class="btn btn-sm toggle-admin-btn <?php echo e($user->is_admin ? 'btn-success' : 'btn-secondary'); ?>" data-user-id="<?php echo e($user->id); ?>">
+                                <i class="bi bi-shield-lock"></i> <?php echo e($user->is_admin ? 'Sim' : 'Não'); ?>
+
+                            </button>
+                        </td>
+                        <td class="d-flex flex-wrap gap-2 justify-content-center">
+                            <a href="<?php echo e(route('admin.users.edit', $user->id)); ?>" class="btn btn-sm btn-warning d-flex align-items-center gap-1 shadow-sm"><i class="bi bi-pencil-square"></i> Editar</a>
+                            <form action="<?php echo e(route('admin.users.destroy', $user->id)); ?>" method="POST" style="display:inline;">
+                                <?php echo csrf_field(); ?>
+                                <?php echo method_field('DELETE'); ?>
+                                <button type="submit" class="btn btn-sm btn-danger d-flex align-items-center gap-1 shadow-sm" onclick="return confirm('Excluir este usuário?')"><i class="bi bi-trash"></i> Excluir</button>
+                            </form>
+                            <form action="<?php echo e(route('admin.users.reset-password', $user->id)); ?>" method="POST" style="display:inline;">
+                                <?php echo csrf_field(); ?>
+                                <button type="submit" class="btn btn-sm btn-info d-flex align-items-center gap-1 shadow-sm" onclick="return confirm('Redefinir senha deste usuário?')"><i class="bi bi-arrow-repeat"></i> Resetar Senha</button>
+                            </form>
+                        </td>
+                    </tr>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startPush('scripts'); ?>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.toggle-admin-btn').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const userId = this.getAttribute('data-user-id');
+            fetch(`/admin/users/${userId}/toggle-admin`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.success) {
+                    this.classList.toggle('btn-success', data.is_admin);
+                    this.classList.toggle('btn-secondary', !data.is_admin);
+                    this.innerHTML = `<i class='bi bi-shield-lock'></i> ${data.is_admin ? 'Sim' : 'Não'}`;
+                } else {
+                    alert('Erro ao alterar status de admin.');
+                }
+            })
+            .catch(() => alert('Erro ao comunicar com o servidor.'));
+        });
+    });
+});
+</script>
+<?php $__env->stopPush(); ?>
+
+<?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\Users\Elber\Documents\GitHub\prototipoSite\diario-bordo\resources\views/admin/users/index.blade.php ENDPATH**/ ?>
