@@ -333,6 +333,7 @@
 @vite(['resources/js/dark-mode.js'])
 @vite(['resources/js/notifications.js'])
 @vite(['resources/js/advanced-search.js'])
+@endpush
 
 <style>
 .timeline {
