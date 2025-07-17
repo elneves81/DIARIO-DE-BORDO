@@ -131,7 +131,7 @@ php artisan view:clear
 
 ## 📝 Licença
 
-Sistema proprietário desenvolvido por **DITIS-ELN**.
+Sistema proprietário desenvolvido por **ELN - Soluções**.
 
 ---
 
