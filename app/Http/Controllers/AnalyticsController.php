@@ -15,39 +15,40 @@ class AnalyticsController extends Controller
      */
     public function getDashboardData(Request $request)
     {
-        $user = auth()->user();
-        $isAdmin = $user->is_admin;
-        
-        // Query base - admin vê tudo, usuário comum só suas viagens
-        $viagensQuery = $isAdmin ? Viagem::query() : Viagem::where('user_id', $user->id);
-        
-        // Período de análise (padrão: últimos 12 meses)
-        $startDate = $request->get('start_date', Carbon::now()->subMonths(12));
-        $endDate = $request->get('end_date', Carbon::now());
-        
-        $viagensQuery->whereBetween('created_at', [$startDate, $endDate]);
-        
-        // KPIs Principais
-        $totalViagens = $viagensQuery->count();
-        $totalDistancia = $viagensQuery->sum('distancia_km') ?? 0;
-        $totalGastos = $viagensQuery->sum('valor_total') ?? 0;
-        $duracaoMedia = $this->calcularDuracaoMedia($viagensQuery->get());
-        $taxaAprovacao = $this->calcularTaxaAprovacao($viagensQuery->get());
-        $crescimentoMensal = $this->calcularCrescimentoMensal($viagensQuery);
-        
-        // Dados para gráficos
-        $statusData = $this->getStatusData($viagensQuery);
-        $monthlyData = $this->getMonthlyData($viagensQuery, $startDate, $endDate);
-        $destinationsData = $this->getDestinationsData($viagensQuery);
-        $expensesData = $this->getExpensesData($viagensQuery);
-        $timelineData = $this->getTimelineData($viagensQuery, $startDate, $endDate);
-        
-        // Atividade recente
-        $atividadeRecente = $this->getAtividadeRecente($user, $isAdmin);
-        
-        return response()->json([
-            'kpis' => [
-                'totalTrips' => $totalViagens,
+        try {
+            $user = auth()->user();
+            $isAdmin = $user->is_admin;
+            
+            // Query base - admin vê tudo, usuário comum só suas viagens
+            $viagensQuery = $isAdmin ? Viagem::query() : Viagem::where('user_id', $user->id);
+            
+            // Período de análise (padrão: últimos 12 meses)
+            $startDate = $request->get('start_date', Carbon::now()->subMonths(12));
+            $endDate = $request->get('end_date', Carbon::now());
+            
+            $viagensQuery->whereBetween('created_at', [$startDate, $endDate]);
+            
+            // KPIs Principais
+            $totalViagens = $viagensQuery->count();
+            $totalDistancia = $this->calcularDistanciaTotal($viagensQuery->get());
+            $totalGastos = $this->calcularGastosTotal($viagensQuery->get());
+            $duracaoMedia = $this->calcularDuracaoMedia($viagensQuery->get());
+            $taxaAprovacao = $this->calcularTaxaAprovacao($viagensQuery->get());
+            $crescimentoMensal = $this->calcularCrescimentoMensal($viagensQuery);
+            
+            // Dados para gráficos
+            $statusData = $this->getStatusData($viagensQuery);
+            $monthlyData = $this->getMonthlyData($viagensQuery, $startDate, $endDate);
+            $destinationsData = $this->getDestinationsData($viagensQuery);
+            $expensesData = $this->getExpensesData($viagensQuery);
+            $timelineData = $this->getTimelineData($viagensQuery, $startDate, $endDate);
+            
+            // Atividade recente
+            $atividadeRecente = $this->getAtividadeRecente($user, $isAdmin);
+            
+            return response()->json([
+                'kpis' => [
+                    'totalTrips' => $totalViagens,
                 'totalDistance' => $totalDistancia,
                 'totalExpenses' => $totalGastos,
                 'avgTripDuration' => $duracaoMedia,
@@ -64,6 +65,31 @@ class AnalyticsController extends Controller
             'recentActivity' => $atividadeRecente,
             'lastUpdated' => Carbon::now()->toISOString()
         ]);
+        
+        } catch (\Exception $e) {
+            \Log::error('Erro no getDashboardData: ' . $e->getMessage());
+            return response()->json([
+                'error' => 'Erro interno do servidor',
+                'message' => 'Não foi possível carregar os dados do dashboard.',
+                'kpis' => [
+                    'totalTrips' => 0,
+                    'totalDistance' => 0,
+                    'totalExpenses' => 0,
+                    'avgTripDuration' => 0,
+                    'approvalRate' => 0,
+                    'monthlyGrowth' => 0
+                ],
+                'charts' => [
+                    'statusData' => ['approved' => 0, 'pending' => 0, 'rejected' => 0, 'draft' => 0],
+                    'monthlyData' => [],
+                    'destinationsData' => [],
+                    'expensesData' => [],
+                    'timelineData' => []
+                ],
+                'recentActivity' => [],
+                'lastUpdated' => Carbon::now()->toISOString()
+            ], 500);
+        }
     }
     
     /**
@@ -71,16 +97,25 @@ class AnalyticsController extends Controller
      */
     private function getStatusData($viagensQuery)
     {
-        $statusCounts = $viagensQuery->select('status', DB::raw('count(*) as total'))
-            ->groupBy('status')
-            ->pluck('total', 'status')
-            ->toArray();
+        $viagens = $viagensQuery->get();
+        $statusCounts = [
+            'concluida' => 0,
+            'em_andamento' => 0,
+            'agendada' => 0
+        ];
+        
+        foreach ($viagens as $viagem) {
+            $status = $viagem->status;
+            if (isset($statusCounts[$status])) {
+                $statusCounts[$status]++;
+            }
+        }
         
         return [
-            'approved' => $statusCounts['aprovado'] ?? 0,
-            'pending' => $statusCounts['pendente'] ?? 0,
-            'rejected' => $statusCounts['rejeitado'] ?? 0,
-            'draft' => $statusCounts['rascunho'] ?? 0
+            'approved' => $statusCounts['concluida'],
+            'pending' => $statusCounts['em_andamento'],
+            'rejected' => 0, // Não há status rejeitado no modelo atual
+            'draft' => $statusCounts['agendada']
         ];
     }
     
@@ -89,27 +124,27 @@ class AnalyticsController extends Controller
      */
     private function getMonthlyData($viagensQuery, $startDate, $endDate)
     {
-        $monthlyStats = $viagensQuery->select(
-                DB::raw('YEAR(created_at) as year'),
-                DB::raw('MONTH(created_at) as month'),
-                DB::raw('count(*) as total'),
-                DB::raw('sum(case when status = "aprovado" then 1 else 0 end) as aprovadas'),
-                DB::raw('sum(case when status = "pendente" then 1 else 0 end) as pendentes')
-            )
-            ->groupBy('year', 'month')
-            ->orderBy('year')
-            ->orderBy('month')
-            ->get();
+        // Usar dados simplificados baseados no modelo atual
+        $viagens = $viagensQuery->get();
+        $monthlyData = [];
         
-        $labels = [];
-        $realizadas = [];
-        $pendentes = [];
-        
-        foreach ($monthlyStats as $stat) {
-            $labels[] = Carbon::createFromDate($stat->year, $stat->month, 1)->format('M');
-            $realizadas[] = $stat->aprovadas;
-            $pendentes[] = $stat->pendentes;
+        foreach ($viagens as $viagem) {
+            $month = Carbon::parse($viagem->created_at)->format('M');
+            if (!isset($monthlyData[$month])) {
+                $monthlyData[$month] = ['total' => 0, 'concluidas' => 0, 'pendentes' => 0];
+            }
+            $monthlyData[$month]['total']++;
+            
+            if ($viagem->status === 'concluida') {
+                $monthlyData[$month]['concluidas']++;
+            } else {
+                $monthlyData[$month]['pendentes']++;
+            }
         }
+        
+        $labels = array_keys($monthlyData);
+        $realizadas = array_column($monthlyData, 'concluidas');
+        $pendentes = array_column($monthlyData, 'pendentes');
         
         return [
             'labels' => $labels,
@@ -133,16 +168,32 @@ class AnalyticsController extends Controller
      */
     private function getDestinationsData($viagensQuery)
     {
-        $destinations = $viagensQuery->select('destino', DB::raw('count(*) as total'))
-            ->where('status', 'aprovado')
-            ->groupBy('destino')
-            ->orderBy('total', 'desc')
-            ->limit(5)
-            ->get();
+        $viagens = $viagensQuery->get();
+        $destinations = [];
+        
+        foreach ($viagens as $viagem) {
+            if ($viagem->status === 'concluida' && $viagem->destino) {
+                if (!isset($destinations[$viagem->destino])) {
+                    $destinations[$viagem->destino] = 0;
+                }
+                $destinations[$viagem->destino]++;
+            }
+        }
+        
+        // Ordenar por quantidade e pegar os top 5
+        arsort($destinations);
+        $destinations = array_slice($destinations, 0, 5, true);
+        
+        if (empty($destinations)) {
+            return [
+                'labels' => ['Sem dados'],
+                'data' => [1]
+            ];
+        }
         
         return [
-            'labels' => $destinations->pluck('destino')->toArray(),
-            'data' => $destinations->pluck('total')->toArray()
+            'labels' => array_keys($destinations),
+            'data' => array_values($destinations)
         ];
     }
     
@@ -151,8 +202,15 @@ class AnalyticsController extends Controller
      */
     private function getExpensesData($viagensQuery)
     {
-        // Simulando categorias de gastos - adapte conforme sua estrutura
-        $totalGastos = $viagensQuery->where('status', 'aprovado')->sum('valor_total');
+        // Usar dados simplificados - não há campo valor_total no modelo atual
+        $viagens = $viagensQuery->get();
+        $totalGastos = 0;
+        
+        foreach ($viagens as $viagem) {
+            if ($viagem->quantidade_abastecida) {
+                $totalGastos += $viagem->quantidade_abastecida * 5.50;
+            }
+        }
         
         if ($totalGastos == 0) {
             return [
@@ -203,25 +261,56 @@ class AnalyticsController extends Controller
     }
     
     /**
+     * Calcular distância total
+     */
+    private function calcularDistanciaTotal($viagens)
+    {
+        $totalDistancia = 0;
+        
+        foreach ($viagens as $viagem) {
+            if ($viagem->distancia_percorrida) {
+                $totalDistancia += $viagem->distancia_percorrida;
+            }
+        }
+        
+        return $totalDistancia;
+    }
+    
+    /**
+     * Calcular gastos total (simulado baseado em combustível)
+     */
+    private function calcularGastosTotal($viagens)
+    {
+        $totalGastos = 0;
+        
+        foreach ($viagens as $viagem) {
+            if ($viagem->quantidade_abastecida) {
+                // Estimativa: R$ 5,50 por litro
+                $totalGastos += $viagem->quantidade_abastecida * 5.50;
+            }
+        }
+        
+        return round($totalGastos, 2);
+    }
+    
+    /**
      * Calcular duração média das viagens
      */
     private function calcularDuracaoMedia($viagens)
     {
         if ($viagens->count() == 0) return 0;
         
-        $totalDias = 0;
+        $totalHoras = 0;
         $viagensComDuracao = 0;
         
         foreach ($viagens as $viagem) {
-            if ($viagem->data_fim && $viagem->data_inicio) {
-                $inicio = Carbon::parse($viagem->data_inicio);
-                $fim = Carbon::parse($viagem->data_fim);
-                $totalDias += $inicio->diffInDays($fim) + 1;
+            if ($viagem->tempo_viagem) {
+                $totalHoras += $viagem->tempo_viagem / 60; // converter minutos para horas
                 $viagensComDuracao++;
             }
         }
         
-        return $viagensComDuracao > 0 ? round($totalDias / $viagensComDuracao, 1) : 0;
+        return $viagensComDuracao > 0 ? round($totalHoras / $viagensComDuracao, 1) : 0;
     }
     
     /**

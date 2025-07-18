@@ -44,8 +44,18 @@ class AdminUserController extends Controller
             'is_admin' => $request->is_admin ? true : false,
             'precisa_trocar_senha' => true,
         ]);
-        Mail::to($user->email)->send(new BemVindoMail($user, $senha));
-        return redirect()->route('admin.users.index')->with('success', 'Usuário criado com sucesso! A senha foi enviada por e-mail.');
+
+        // Tentar enviar email com tratamento de erro
+        try {
+            Mail::to($user->email)->send(new BemVindoMail($user, $senha));
+            $message = 'Usuário criado com sucesso! A senha foi enviada por e-mail.';
+        } catch (\Exception $e) {
+            // Log do erro para debug
+            \Log::error('Erro ao enviar email de boas-vindas: ' . $e->getMessage());
+            $message = 'Usuário criado com sucesso! Senha temporária: ' . $senha . ' (Email não pôde ser enviado)';
+        }
+
+        return redirect()->route('admin.users.index')->with('success', $message);
     }
 
     public function edit($id)
@@ -75,9 +85,17 @@ class AdminUserController extends Controller
         $novaSenha = substr(bin2hex(random_bytes(4)),0,8);
         $user->password = Hash::make($novaSenha);
         $user->save();
-        // Opcional: enviar e-mail para o usuário
-        Mail::to($user->email)->send(new BemVindoMail($user));
-        return redirect()->route('admin.users.index')->with('success', 'Senha redefinida para: ' . $novaSenha);
+        
+        // Tentar enviar email com tratamento de erro
+        try {
+            Mail::to($user->email)->send(new BemVindoMail($user));
+            $message = 'Senha redefinida e enviada por e-mail para: ' . $user->email;
+        } catch (\Exception $e) {
+            \Log::error('Erro ao enviar email de redefinição de senha: ' . $e->getMessage());
+            $message = 'Senha redefinida para: ' . $novaSenha . ' (Email não pôde ser enviado)';
+        }
+        
+        return redirect()->route('admin.users.index')->with('success', $message);
     }
 
     public function destroy($id)

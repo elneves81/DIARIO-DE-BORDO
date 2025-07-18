@@ -1,0 +1,306 @@
+/* ===== CARDS EXECUTIVOS PROFISSIONAIS ===== */
+.executive-card {
+    height: 100%;
+    border-radius: 25px;
+    overflow: hidden;
+    position: relative;
+    transition: all 0.4s ease;
+    cursor: pointer;
+}
+
+.executive-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+}
+
+.card-background {
+    position: relative;
+    height: 100%;
+    min-height: 320px;
+    border-radius: 25px;
+    overflow: hidden;
+}
+
+.success-card .card-background {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+}
+
+.primary-card .card-background {
+    background: linear-gradient(135deg, #007bff 0%, #6610f2 100%);
+}
+
+.info-card .card-background {
+    background: linear-gradient(135deg, #17a2b8 0%, #6f42c1 100%);
+}
+
+.warning-card .card-background {
+    background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+}
+
+.danger-card .card-background {
+    background: linear-gradient(135deg, #dc3545 0%, #e83e8c 100%);
+}
+
+.secondary-card .card-background {
+    background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+}
+
+.card-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.15);
+    z-index: 1;
+}
+
+.card-content-executive {
+    position: relative;
+    z-index: 2;
+    padding: 2rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    color: white;
+}
+
+.card-header-executive {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+}
+
+.card-icon-executive {
+    width: 70px;
+    height: 70px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    font-size: 2rem;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.executive-card:hover .card-icon-executive {
+    transform: scale(1.1) rotate(5deg);
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.card-badge {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.card-body-executive {
+    flex: 1;
+    margin-bottom: 1.5rem;
+}
+
+.card-title-executive {
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: white;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+}
+
+.card-description-executive {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+}
+
+.card-stats {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.stat-mini {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    text-align: center;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    min-width: 80px;
+}
+
+.stat-number-mini {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: white;
+    line-height: 1;
+}
+
+.stat-label-mini {
+    display: block;
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.8);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 0.25rem;
+}
+
+.card-footer-executive {
+    margin-top: auto;
+}
+
+.btn-executive {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 15px;
+    padding: 1rem 1.5rem;
+    color: white;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    width: 100%;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.btn-executive:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    color: white;
+}
+
+.btn-executive i {
+    font-size: 1.2rem;
+}
+
+.btn-success-exec:hover {
+    background: rgba(40, 167, 69, 0.3);
+    border-color: rgba(40, 167, 69, 0.6);
+}
+
+.btn-primary-exec:hover {
+    background: rgba(0, 123, 255, 0.3);
+    border-color: rgba(0, 123, 255, 0.6);
+}
+
+.btn-info-exec:hover {
+    background: rgba(23, 162, 184, 0.3);
+    border-color: rgba(23, 162, 184, 0.6);
+}
+
+.btn-warning-exec:hover {
+    background: rgba(255, 193, 7, 0.3);
+    border-color: rgba(255, 193, 7, 0.6);
+}
+
+.btn-danger-exec:hover {
+    background: rgba(220, 53, 69, 0.3);
+    border-color: rgba(220, 53, 69, 0.6);
+}
+
+.btn-secondary-exec:hover {
+    background: rgba(108, 117, 125, 0.3);
+    border-color: rgba(108, 117, 125, 0.6);
+}
+
+/* Responsividade para cards executivos */
+@media (max-width: 768px) {
+    .card-content-executive {
+        padding: 1.5rem;
+    }
+    
+    .card-icon-executive {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5rem;
+    }
+    
+    .card-title-executive {
+        font-size: 1.5rem;
+    }
+    
+    .card-description-executive {
+        font-size: 0.9rem;
+    }
+    
+    .btn-executive {
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .stat-number-mini {
+        font-size: 1.2rem;
+    }
+    
+    .card-background {
+        min-height: 280px;
+    }
+}
+
+/* Animações especiais para cards executivos */
+@keyframes cardPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+}
+
+.executive-card:hover {
+    animation: cardPulse 0.6s ease-in-out;
+}
+
+/* Efeitos de glassmorphism aprimorados */
+.card-icon-executive,
+.card-badge,
+.stat-mini,
+.btn-executive {
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+}
+
+/* Modo escuro para cards executivos */
+@media (prefers-color-scheme: dark) {
+    .success-card .card-background {
+        background: linear-gradient(135deg, #1e7e34 0%, #155724 100%);
+    }
+    
+    .primary-card .card-background {
+        background: linear-gradient(135deg, #004085 0%, #002752 100%);
+    }
+    
+    .info-card .card-background {
+        background: linear-gradient(135deg, #0c5460 0%, #062c33 100%);
+    }
+    
+    .warning-card .card-background {
+        background: linear-gradient(135deg, #856404 0%, #533f03 100%);
+    }
+    
+    .danger-card .card-background {
+        background: linear-gradient(135deg, #721c24 0%, #491217 100%);
+    }
+    
+    .secondary-card .card-background {
+        background: linear-gradient(135deg, #383d41 0%, #212529 100%);
+    }
+}

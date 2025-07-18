@@ -22,7 +22,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 // Rotas de Analytics protegidas por autenticação
 Route::middleware(['auth'])->group(function () {
-    Route::get('/analytics/dashboard', [AnalyticsController::class, 'getDashboardData'])->name('api.analytics.dashboard');
+    // Rota de teste simples
+    Route::get('/analytics/test', function () {
+        return response()->json(['status' => 'success', 'message' => 'API funcionando', 'user' => auth()->user()->name]);
+    })->name('api.analytics.test');
     Route::get('/analytics/notifications', [AnalyticsController::class, 'getNotifications'])->name('api.analytics.notifications');
 });
 

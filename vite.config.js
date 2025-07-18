@@ -5,16 +5,57 @@ export default defineConfig({
     plugins: [
         laravel({
             input: [
+                // CSS Principal
                 'resources/css/app.css',
+                
+                // CSS Componentes
+                'resources/css/components/dark-mode.css',
+                'resources/css/components/executive-cards.css',
+                'resources/css/components/navbar-fix.css',
+                
+                // JavaScript Principal
                 'resources/js/app.js',
-                'resources/css/dark-mode.css',
-                'resources/js/dark-mode.js',
-                'resources/js/notifications.js',
-                'resources/js/advanced-search.js',
-                'resources/js/dashboard-analytics.js',
-                'resources/js/ux-enhancements.js',
+                'resources/js/bootstrap.js',
+                
+                // JavaScript Módulos
+                'resources/js/modules/dark-mode.js',
+                'resources/js/modules/notifications.js',
+                'resources/js/modules/advanced-search.js',
+                'resources/js/modules/dashboard-analytics.js',
+                'resources/js/modules/ux-enhancements.js',
             ],
             refresh: true,
         }),
     ],
+    build: {
+        rollupOptions: {
+            output: {
+                manualChunks: {
+                    // Separar módulos em chunks para melhor performance
+                    'ui-modules': [
+                        'resources/js/modules/dark-mode.js',
+                        'resources/js/modules/ux-enhancements.js'
+                    ],
+                    'feature-modules': [
+                        'resources/js/modules/notifications.js',
+                        'resources/js/modules/advanced-search.js',
+                        'resources/js/modules/dashboard-analytics.js'
+                    ]
+                }
+            }
+        },
+        // Otimizações para produção
+        minify: 'terser',
+        terserOptions: {
+            compress: {
+                drop_console: true,
+                drop_debugger: true
+            }
+        }
+    },
+    server: {
+        hmr: {
+            host: 'localhost',
+        },
+    },
 });

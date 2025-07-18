@@ -3,208 +3,309 @@
 namespace App\Http\Controllers;
 
 use App\Models\Viagem;
+use App\Services\Viagem\ViagemService;
+use App\Services\Relatorio\RelatorioService;
+use App\Http\Requests\Viagem\StoreViagemRequest;
+use App\Http\Requests\Viagem\UpdateViagemRequest;
 use Barryvdh\DomPDF\Facade as PDF;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class ViagemController extends Controller
 {
+    protected $viagemService;
+    protected $relatorioService;
+
+    public function __construct(ViagemService $viagemService, RelatorioService $relatorioService)
+    {
+        $this->viagemService = $viagemService;
+        $this->relatorioService = $relatorioService;
+    }
+
+    /**
+     * Lista viagens com filtros e cache
+     */
     public function index(Request $request)
     {
         $user = auth()->user();
-        $query = Viagem::query();
+        $query = Viagem::with('user');
 
-        if (!$user->isAdmin()) {
+        // Aplicar filtro de usuário se não for admin
+        if (!$user->is_admin) {
             $query->where('user_id', $user->id);
         }
 
-        // Filtros avançados
-        if ($request->filled('destino')) {
-            $query->where('destino', 'like', '%' . $request->destino . '%');
+        // Aplicar filtros de busca
+        $this->applyFilters($query, $request);
+
+        // Cache baseado nos filtros e usuário
+        $cacheKey = $this->generateCacheKey($request, $user);
+        $viagens = Cache::remember($cacheKey, 300, function () use ($query) {
+            return $query->orderBy('data', 'desc')->paginate(15);
+        });
+
+        // Resposta AJAX para paginação infinita
+        if ($request->ajax()) {
+            $html = view('viagens._row', compact('viagens'))->render();
+            return response()->json(['html' => $html]);
         }
+        
+        return view('viagens.index-mobile', compact('viagens'));
+    }
+
+    /**
+     * Mostra formulário de criação
+     */
+    public function create()
+    {
+        return view('viagens.create');
+    }
+
+    /**
+     * Armazena nova viagem
+     */
+    public function store(StoreViagemRequest $request)
+    {
+        try {
+            // Validar regras de negócio
+            $errors = $this->viagemService->validateBusinessRules($request->validated());
+            if (!empty($errors)) {
+                return back()->withInput()->withErrors($errors);
+            }
+
+            // Criar viagem
+            $viagem = Viagem::create($request->validated());
+
+            // Processar anexos
+            $this->processAnexos($viagem, $request);
+
+            // Limpar cache relacionado
+            $this->clearViagemCache();
+
+            return redirect()->route('viagens.index')
+                           ->with('success', 'Viagem cadastrada com sucesso!');
+
+        } catch (\Exception $e) {
+            Log::error('Erro ao criar viagem: ' . $e->getMessage(), [
+                'user_id' => auth()->id(),
+                'data' => $request->validated()
+            ]);
+
+            return back()->withInput()
+                        ->with('error', 'Erro ao cadastrar viagem. Tente novamente.');
+        }
+    }
+
+    /**
+     * Mostra detalhes da viagem
+     */
+    public function show($id)
+    {
+        $viagem = Viagem::with('user')->find($id);
+        
+        if (!$viagem) {
+            return redirect()->route('viagens.index')
+                           ->with('error', 'Viagem não encontrada.');
+        }
+
+        // Verificar permissão
+        if (!auth()->user()->is_admin && $viagem->user_id !== auth()->id()) {
+            return redirect()->route('viagens.index')
+                           ->with('error', 'Você não tem permissão para visualizar esta viagem.');
+        }
+
+        // Calcular estatísticas da viagem
+        $stats = $this->viagemService->calculateStats($viagem);
+
+        return view('viagens.show', compact('viagem', 'stats'));
+    }
+
+    /**
+     * Mostra formulário de edição
+     */
+    public function edit($id)
+    {
+        $viagem = Viagem::find($id);
+        
+        if (!$viagem) {
+            return redirect()->route('viagens.index')
+                           ->with('error', 'Viagem não encontrada.');
+        }
+
+        // Verificar permissão
+        if (!auth()->user()->is_admin && $viagem->user_id !== auth()->id()) {
+            return redirect()->route('viagens.index')
+                           ->with('error', 'Você não tem permissão para editar esta viagem.');
+        }
+
+        return view('viagens.edit', compact('viagem'));
+    }
+
+    /**
+     * Atualiza viagem
+     */
+    public function update(UpdateViagemRequest $request, $id)
+    {
+        try {
+            $viagem = Viagem::findOrFail($id);
+
+            // Verificar permissão
+            if (!auth()->user()->is_admin && $viagem->user_id !== auth()->id()) {
+                return redirect()->route('viagens.index')
+                               ->with('error', 'Você não tem permissão para editar esta viagem.');
+            }
+
+            // Validar regras de negócio
+            $errors = $this->viagemService->validateBusinessRules($request->validated(), $viagem);
+            if (!empty($errors)) {
+                return back()->withInput()->withErrors($errors);
+            }
+
+            // Atualizar viagem
+            $viagem->update($request->validated());
+
+            // Processar anexos
+            $this->processAnexos($viagem, $request);
+
+            // Limpar cache relacionado
+            $this->clearViagemCache();
+
+            return redirect()->route('viagens.show', $viagem->id)
+                           ->with('success', 'Viagem atualizada com sucesso!');
+
+        } catch (\Exception $e) {
+            Log::error('Erro ao atualizar viagem: ' . $e->getMessage(), [
+                'viagem_id' => $id,
+                'user_id' => auth()->id(),
+                'data' => $request->validated()
+            ]);
+
+            return back()->withInput()
+                        ->with('error', 'Erro ao atualizar viagem. Tente novamente.');
+        }
+    }
+
+    /**
+     * Remove viagem
+     */
+    public function destroy(Viagem $viagem)
+    {
+        try {
+            // Verificar permissão
+            if (!auth()->user()->is_admin && $viagem->user_id !== auth()->id()) {
+                return redirect()->route('viagens.index')
+                               ->with('error', 'Você não tem permissão para excluir esta viagem.');
+            }
+
+            $viagem->delete();
+
+            // Limpar cache relacionado
+            $this->clearViagemCache();
+
+            return redirect()->route('viagens.index')
+                           ->with('success', 'Viagem excluída com sucesso!');
+
+        } catch (\Exception $e) {
+            Log::error('Erro ao excluir viagem: ' . $e->getMessage(), [
+                'viagem_id' => $viagem->id,
+                'user_id' => auth()->id()
+            ]);
+
+            return back()->with('error', 'Erro ao excluir viagem. Tente novamente.');
+        }
+    }
+
+    /**
+     * Exporta viagens em PDF
+     */
+    public function exportarPdf(Request $request)
+    {
+        try {
+            $filters = $request->only(['user_id', 'data_inicio', 'data_fim', 'tipo_veiculo', 'placa', 'destino']);
+            
+            // Se não for admin, filtrar apenas suas viagens
+            if (!auth()->user()->is_admin) {
+                $filters['user_id'] = auth()->id();
+            }
+
+            $viagens = $this->relatorioService->generateViagemReport($filters);
+            $stats = $this->relatorioService->calculateReportStats($viagens);
+
+            $pdf = PDF::loadView('viagens.pdf', compact('viagens', 'stats'));
+            
+            return $pdf->download('relatorio_viagens_' . date('Y-m-d') . '.pdf');
+
+        } catch (\Exception $e) {
+            Log::error('Erro ao gerar PDF: ' . $e->getMessage());
+            
+            return back()->with('error', 'Erro ao gerar relatório PDF. Tente novamente.');
+        }
+    }
+
+    /**
+     * Aplica filtros na query
+     */
+    private function applyFilters($query, Request $request): void
+    {
+        $filters = [
+            'destino' => 'like',
+            'tipo_veiculo' => 'like',
+            'placa' => 'like',
+            'condutor' => 'like'
+        ];
+
+        foreach ($filters as $field => $operator) {
+            if ($request->filled($field)) {
+                $value = $operator === 'like' ? '%' . $request->$field . '%' : $request->$field;
+                $query->where($field, $operator, $value);
+            }
+        }
+
+        // Filtros de data
         if ($request->filled('data_ini')) {
             $query->whereDate('data', '>=', $request->data_ini);
         }
         if ($request->filled('data_fim')) {
             $query->whereDate('data', '<=', $request->data_fim);
         }
-        if ($request->filled('tipo_veiculo')) {
-            $query->where('tipo_veiculo', 'like', '%' . $request->tipo_veiculo . '%');
-        }
-        if ($request->filled('placa')) {
-            $query->where('placa', 'like', '%' . $request->placa . '%');
-        }
-        if ($request->filled('condutor')) {
-            $query->where('condutor', 'like', '%' . $request->condutor . '%');
-        }
+    }
 
-        // Gera uma chave de cache baseada nos filtros e na página
-        $cacheKey = 'viagens:' . md5(json_encode($request->all()) . ':page:' . $request->get('page', 1) . ':user:' . ($user->id ?? 'guest'));
-        $viagens = \Cache::remember($cacheKey, 60, function () use ($query) {
-            return $query->orderBy('data', 'desc')->paginate(15);
-        });
-
-        if ($request->ajax()) {
-            $html = view('viagens._row', compact('viagens'))->render();
-            return response()->json(['html' => $html]);
-        }
+    /**
+     * Gera chave de cache baseada nos filtros
+     */
+    private function generateCacheKey(Request $request, $user): string
+    {
+        $filters = $request->only(['destino', 'data_ini', 'data_fim', 'tipo_veiculo', 'placa', 'condutor']);
+        $page = $request->get('page', 1);
         
-        // Sempre usar a view mobile (mais moderna com cards e status coloridos)
-        return view('viagens.index-mobile', compact('viagens'));
+        return 'viagens:' . md5(json_encode($filters) . ':page:' . $page . ':user:' . $user->id);
     }
 
-    public function create()
+    /**
+     * Processa upload de anexos
+     */
+    private function processAnexos(Viagem $viagem, Request $request): void
     {
-        return view('viagens.create');
-    }
-
-    public function store(Request $request)
-    {
-        $request->validate([
-            'data' => [
-                'required',
-                'date',
-                function($attribute, $value, $fail) {
-                    $hoje = date('Y-m-d');
-                    if ($value !== $hoje) {
-                        $fail('Você não pode agendar essa viagem. A data precisa ser de Hoje!!');
-                    }
-                }
-            ],
-            'hora_saida' => 'required',
-            'km_saida' => 'required|integer',
-            'destino' => 'required',
-            'condutor' => 'required',
-        ]);
-
-        // Validação extra: km_chegada só se informado, e deve ser maior ou igual ao km_saida
-        if ($request->filled('km_chegada')) {
-            if ($request->km_chegada < $request->km_saida) {
-                return back()->withInput()->withErrors(['km_chegada' => 'O KM de chegada não pode ser menor que o KM de saída.']);
-            }
-        }
-        // Validação extra: hora_chegada só se informado, e deve ser válida
-        if ($request->filled('hora_chegada')) {
-            $h_saida = $request->hora_saida;
-            $h_chegada = $request->hora_chegada;
-            if (strlen($h_saida) === 5 && strlen($h_chegada) === 5) {
-                if ($h_chegada === $h_saida) {
-                    return back()->withInput()->withErrors(['hora_chegada' => 'A hora de chegada não pode ser igual à hora de saída.']);
-                }
-                // Se hora_chegada < hora_saida, permite (viagem atravessa a meia-noite)
-                // Só bloqueia se for igual
-            }
-        }
-
-        $viagem = Viagem::create(array_merge(
-            $request->except('anexos'),
-            [
-                'checklist' => $request->input('checklist', [])
-            ]
-        ));
-
-        // Upload e salvamento dos anexos
-        if ($request->hasFile('anexos')) {
-            $anexos = [];
-            foreach ($request->file('anexos') as $file) {
-                if ($file->isValid()) {
-                    $path = $file->store('anexos_viagens/' . $viagem->id, 'public');
-                    $anexos[] = $path;
-                }
-            }
-            $viagem->anexos = $anexos;
-            $viagem->save();
-        }
-
-        return redirect()->route('viagens.index')->with('success', 'Viagem cadastrada com sucesso!');
-    }
-
-    public function show($id)
-    {
-        $viagem = \App\Models\Viagem::find($id);
-        if (!$viagem) {
-            return redirect()->route('viagens.index')->with('error', 'Viagem não encontrada.');
-        }
-        return view('viagens.show', compact('viagem'));
-    }
-
-    public function edit($id)
-    {
-        $viagem = Viagem::find($id);
-        if (!$viagem) {
-            return redirect()->route('viagens.index')->with('error', 'Viagem não encontrada ou parâmetro ausente.');
-        }
-        return view('viagens.edit', compact('viagem'));
-    }
-
-    public function update(Request $request, $id)
-    {
-        $viagem = Viagem::findOrFail($id);
-        $request->validate([
-            'data' => 'required|date',
-            'hora_saida' => 'required',
-            'km_saida' => 'required|integer',
-            'destino' => 'required',
-            'hora_chegada' => 'nullable',
-            'km_chegada' => 'nullable|integer',
-            'condutor' => 'required',
-        ]);
-
-        // Validação extra: km_chegada só se informado, deve ser maior ou igual ao km_saida
-        if ($request->filled('km_chegada')) {
-            if ($request->input('km_chegada') < $request->input('km_saida')) {
-                return back()->withInput()->withErrors(['km_chegada' => 'O KM de chegada não pode ser menor que o KM de saída.']);
-            }
-        }
-        
-        // Validação extra: hora_chegada só se informado, deve ser válida
-        if ($request->filled('hora_chegada')) {
-            $h_saida = $request->hora_saida;
-            $h_chegada = $request->hora_chegada;
-            if (strlen($h_saida) === 5 && strlen($h_chegada) === 5) {
-                if ($h_chegada < $h_saida) {
-                    return back()->withInput()->withErrors(['hora_chegada' => 'A hora de chegada não pode ser inferior à hora de saída.']);
-                }
-            }
-        }
-
-        $data = $request->except(['anexos', 'origem']);
-        $data['user_id'] = auth()->id();
-
-        // DEBUG: Verifique o que chega no request e o que será salvo
-        \Log::info('Viagem update request', $request->all());
-        \Log::info('Viagem update data', $data);
-
-        $viagem->update($data);
-
-        // Upload e atualização dos anexos
         if ($request->hasFile('anexos')) {
             $anexos = $viagem->anexos ?? [];
+            
             foreach ($request->file('anexos') as $file) {
                 if ($file->isValid()) {
                     $path = $file->store('anexos_viagens/' . $viagem->id, 'public');
                     $anexos[] = $path;
                 }
             }
-            $viagem->anexos = $anexos;
-            $viagem->save();
+            
+            $viagem->update(['anexos' => $anexos]);
         }
-
-        return redirect()->route('viagens.show', $viagem->id)
-                         ->with('success', 'Viagem atualizada com sucesso!');
     }
 
-    public function destroy(Viagem $viagem)
+    /**
+     * Limpa cache relacionado a viagens
+     */
+    private function clearViagemCache(): void
     {
-        $viagem->delete();
-
-        return redirect()->route('viagens.index')
-                         ->with('success', 'Viagem excluída com sucesso!');
-    }
-
-    public function exportarPdf()
-    {
-        $viagens = Viagem::orderBy('data', 'desc')->get();
-        $pdf = PDF::loadView('viagens.pdf', compact('viagens'));
-        return $pdf->download('relatorio_viagens.pdf');
+        Cache::tags(['viagens'])->flush();
     }
 }

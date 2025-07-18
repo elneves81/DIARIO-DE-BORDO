@@ -45,9 +45,17 @@ class AdminSugestaoController extends Controller
             $sugestaoComResposta->resposta = $request->resposta;
             $sugestaoComResposta->respondida_em = now();
             
-            \Mail::to($sugestao->user->email)->send(new \App\Mail\RespostaSugestaoMail($sugestaoComResposta));
+            try {
+                \Mail::to($sugestao->user->email)->send(new \App\Mail\RespostaSugestaoMail($sugestaoComResposta));
+                $message = 'Resposta enviada por email com sucesso!';
+            } catch (\Exception $e) {
+                \Log::error('Erro ao enviar email de resposta de sugestão: ' . $e->getMessage());
+                $message = 'Resposta processada, mas email não pôde ser enviado.';
+            }
+        } else {
+            $message = 'Resposta processada (usuário sem email cadastrado).';
         }
         
-        return redirect()->route('admin.sugestoes.index')->with('success', 'Resposta enviada por email com sucesso!');
+        return redirect()->route('admin.sugestoes.index')->with('success', $message);
     }
 }

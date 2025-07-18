@@ -65,13 +65,28 @@ function renderCharts() {
 // Buscar dados reais do backend
 async function loadDashboardData() {
     try {
-        const response = await fetch('/api/analytics/dashboard', {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]');
+        if (!csrfToken) {
+            console.warn('CSRF token não encontrado, usando dados de fallback');
+            return getFallbackData();
+        }
+
+        const response = await fetch('/analytics/dashboard', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': csrfToken.getAttribute('content'),
+                'X-Requested-With': 'XMLHttpRequest'
             }
         });
+        
+        // Verificar se a resposta é JSON
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            console.warn('Resposta não é JSON, possivelmente redirecionamento para login. Usando dados de fallback.');
+            return getFallbackData();
+        }
         
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
@@ -510,9 +525,15 @@ function updateLastRefresh(timestamp) {
     }
 }
 
+// Função getDashboardData que estava faltando
+async function getDashboardData() {
+    return await loadDashboardData();
+}
+
 // Exportar funções para uso global
 window.DashboardAnalytics = {
     refresh: refreshDashboardData,
     getData: getDashboardData,
-    renderCharts: renderCharts
+    renderCharts: renderCharts,
+    loadData: loadDashboardData
 };
