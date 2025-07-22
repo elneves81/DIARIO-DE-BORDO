@@ -2,7 +2,8 @@
     "private": true,
     "scripts": {
         "dev": "vite",
-        "build": "vite build"
+        "build": "vite build && npm run copy-public",
+        "copy-public": "powershell -Command \"Copy-Item -Path 'public/*' -Destination 'dist/' -Recurse -Force\""
     },
     "devDependencies": {
         "@tailwindcss/forms": "^0.5.2",
