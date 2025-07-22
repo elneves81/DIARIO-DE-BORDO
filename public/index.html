@@ -35,13 +35,13 @@
 
                         <!-- Navigation Links -->
                         <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                            <a href="#dashboard" class="inline-flex items-center px-1 pt-1 border-b-2 border-indigo-400 text-sm font-medium leading-5 text-gray-900 focus:outline-none focus:border-indigo-700 transition duration-150 ease-in-out">
+                            <a href="/" class="inline-flex items-center px-1 pt-1 border-b-2 border-indigo-400 text-sm font-medium leading-5 text-gray-900 focus:outline-none focus:border-indigo-700 transition duration-150 ease-in-out">
                                 Dashboard
                             </a>
-                            <a href="#viagens" class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out">
+                            <a href="/viagens.html" class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out">
                                 Viagens
                             </a>
-                            <a href="#relatorios" class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out">
+                            <a href="/relatorios.html" class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out">
                                 Relatórios
                             </a>
                         </div>
@@ -198,7 +198,7 @@
                                     <h3 class="text-lg font-semibold text-gray-900">Gerenciar Viagens</h3>
                                 </div>
                                 <p class="text-gray-600 mb-4">Controle completo de suas viagens com rastreamento em tempo real.</p>
-                                <a href="#viagens" class="text-blue-600 hover:text-blue-800 font-medium">Ver todas →</a>
+                                <a href="/viagens.html" class="text-blue-600 hover:text-blue-800 font-medium">Ver todas →</a>
                             </div>
                         </div>
 
@@ -211,7 +211,7 @@
                                     <h3 class="text-lg font-semibold text-gray-900">Analytics</h3>
                                 </div>
                                 <p class="text-gray-600 mb-4">Relatórios detalhados e métricas de performance das viagens.</p>
-                                <a href="#analytics" class="text-green-600 hover:text-green-800 font-medium">Visualizar →</a>
+                                <a href="/relatorios.html" class="text-green-600 hover:text-green-800 font-medium">Visualizar →</a>
                             </div>
                         </div>
 
@@ -238,19 +238,20 @@
     
     <!-- Simple interactivity -->
     <script>
-        // Simple navigation highlighting
-        document.querySelectorAll('nav a').forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                // Remove active class from all links
-                document.querySelectorAll('nav a').forEach(l => {
-                    l.classList.remove('border-indigo-400');
-                    l.classList.add('border-transparent', 'text-gray-500');
-                });
-                // Add active class to clicked link
-                this.classList.add('border-indigo-400');
-                this.classList.remove('border-transparent', 'text-gray-500');
-                this.classList.add('text-gray-900');
+        // Animação suave para os cards de estatísticas
+        document.addEventListener('DOMContentLoaded', function() {
+            const statsCards = document.querySelectorAll('.grid .bg-white');
+            statsCards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(20px)';
+                    card.style.transition = 'all 0.5s ease';
+                    
+                    setTimeout(() => {
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0)';
+                    }, 100);
+                }, index * 100);
             });
         });
 
@@ -258,6 +259,7 @@
         console.log('🚗 Diário de Bordo - Sistema carregado com sucesso!');
         console.log('📊 Laravel + Tailwind CSS + Vite');
         console.log('🌐 Deployed on Vercel');
+        console.log('✨ Navegação entre páginas funcionando!');
     </script>
 </body>
 </html>
