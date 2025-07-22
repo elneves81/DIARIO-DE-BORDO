@@ -1,0 +1,80 @@
+{
+    "name": "Diário de Bordo",
+    "short_name": "DiárioBordo",
+    "description": "Sistema de Gerenciamento de Viagens Corporativas",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#007bff",
+    "orientation": "portrait-primary",
+    "scope": "/",
+    "lang": "pt-BR",
+    "categories": ["business", "productivity", "travel"],
+    "icons": [
+        {
+            "src": "/img/icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "/img/icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable any"
+        }
+    ],
+    "shortcuts": [
+        {
+            "name": "Nova Viagem",
+            "short_name": "Nova",
+            "description": "Registrar uma nova viagem",
+            "url": "/viagens/create",
+            "icons": [
+                {
+                    "src": "/img/shortcut-nova.png",
+                    "sizes": "96x96"
+                }
+            ]
+        },
+        {
+            "name": "Minhas Viagens",
+            "short_name": "Lista",
+            "description": "Ver lista de viagens",
+            "url": "/viagens",
+            "icons": [
+                {
+                    "src": "/img/shortcut-lista.png",
+                    "sizes": "96x96"
+                }
+            ]
+        },
+        {
+            "name": "Relatórios",
+            "short_name": "Relatórios",
+            "description": "Ver relatórios e estatísticas",
+            "url": "/relatorios",
+            "icons": [
+                {
+                    "src": "/img/shortcut-relatorios.png",
+                    "sizes": "96x96"
+                }
+            ]
+        }
+    ],
+    "categories": ["productivity", "business", "travel"],
+    "screenshots": [
+        {
+            "src": "/img/screenshot-mobile.png",
+            "sizes": "320x640",
+            "type": "image/png",
+            "form_factor": "narrow"
+        },
+        {
+            "src": "/img/screenshot-tablet.png",
+            "sizes": "768x1024",
+            "type": "image/png",
+            "form_factor": "wide"
+        }
+    ]
+}

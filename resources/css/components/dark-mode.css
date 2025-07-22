@@ -1,0 +1,409 @@
+/* Dark Mode CSS - Corrigido para funcionar com classes .dark */
+
+/* Modo Claro (Padrão) */
+:root {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8f9fa;
+    --bg-tertiary: #e9ecef;
+    --text-primary: #212529;
+    --text-secondary: #6c757d;
+    --text-muted: #868e96;
+    --border-color: #dee2e6;
+    --shadow: rgba(0, 0, 0, 0.1);
+    --card-bg: #ffffff;
+    --navbar-bg: #ffffff;
+    --input-bg: #ffffff;
+    --input-border: #ced4da;
+}
+
+/* Modo Escuro */
+.dark {
+    --bg-primary: #1a1a1a;
+    --bg-secondary: #2d2d2d;
+    --bg-tertiary: #3a3a3a;
+    --text-primary: #ffffff;
+    --text-secondary: #b0b0b0;
+    --text-muted: #888888;
+    --border-color: #444444;
+    --shadow: rgba(0, 0, 0, 0.3);
+    --card-bg: #2d2d2d;
+    --navbar-bg: #1f1f1f;
+    --input-bg: #3a3a3a;
+    --input-border: #555555;
+}
+
+/* Aplicar variáveis do tema */
+body {
+    background-color: var(--bg-primary) !important;
+    color: var(--text-primary) !important;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Modo Escuro - Fundo da página */
+.dark body {
+    background-color: #1a1a1a !important;
+}
+
+.dark .min-h-screen {
+    background-color: #1a1a1a !important;
+}
+
+.dark .bg-gray-100 {
+    background-color: #1a1a1a !important;
+}
+
+.dark .bg-white {
+    background-color: #2d2d2d !important;
+}
+
+/* Navbar no modo escuro */
+.dark nav {
+    background-color: #1f1f1f !important;
+    border-color: #444444 !important;
+}
+
+.dark .navbar {
+    background-color: #1f1f1f !important;
+}
+
+/* Botões da navbar - garantir que não desapareçam */
+.dark nav button {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    color: #ffffff !important;
+}
+
+.dark nav button:hover {
+    background-color: rgba(255, 255, 255, 0.2) !important;
+    border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+.dark nav button span {
+    color: #ffffff !important;
+}
+
+.dark nav button svg {
+    color: #ffffff !important;
+}
+
+/* Links de navegação */
+.dark .nav-link {
+    color: #ffffff !important;
+}
+
+.dark .nav-link:hover {
+    color: #0d6efd !important;
+}
+
+/* Cards no modo escuro */
+.dark .card,
+.dark .dashboard-card,
+.dark .stats-card,
+.dark .chart-card {
+    background-color: #2d2d2d !important;
+    border-color: #444444 !important;
+    color: #ffffff !important;
+}
+
+.dark .card-body {
+    background-color: #2d2d2d !important;
+    color: #ffffff !important;
+}
+
+.dark .card-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: #ffffff !important;
+}
+
+/* Textos no modo escuro */
+.dark .card-title {
+    color: #ffffff !important;
+}
+
+.dark .card-text {
+    color: #b0b0b0 !important;
+}
+
+.dark .text-muted {
+    color: #888888 !important;
+}
+
+.dark .text-secondary {
+    color: #b0b0b0 !important;
+}
+
+/* Formulários no modo escuro */
+.dark .form-control,
+.dark .form-select,
+.dark .modern-input {
+    background-color: #3a3a3a !important;
+    border-color: #555555 !important;
+    color: #ffffff !important;
+}
+
+.dark .form-control:focus,
+.dark .modern-input:focus {
+    background-color: #3a3a3a !important;
+    border-color: #0d6efd !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25) !important;
+}
+
+/* Modais no modo escuro */
+.dark .modal-content {
+    background-color: #2d2d2d !important;
+    color: #ffffff !important;
+}
+
+.dark .modal-header {
+    border-color: #444444 !important;
+}
+
+.dark .modal-footer {
+    border-color: #444444 !important;
+}
+
+/* Dropdown no modo escuro */
+.dark .dropdown-menu {
+    background-color: #2d2d2d !important;
+    border-color: #444444 !important;
+}
+
+.dark .dropdown-item {
+    color: #ffffff !important;
+}
+
+.dark .dropdown-item:hover {
+    background-color: #3a3a3a !important;
+}
+
+/* Tabelas no modo escuro */
+.dark .table {
+    color: #ffffff !important;
+}
+
+.dark .table-striped > tbody > tr:nth-of-type(odd) > td,
+.dark .table-striped > tbody > tr:nth-of-type(odd) > th {
+    background-color: #3a3a3a !important;
+}
+
+/* Alertas no modo escuro */
+.dark .alert {
+    border-color: #444444 !important;
+    background-color: #3a3a3a !important;
+    color: #ffffff !important;
+}
+
+.dark .alert-info {
+    background-color: rgba(52, 152, 219, 0.2) !important;
+    border-color: #3498db !important;
+    color: #ffffff !important;
+}
+
+.dark .alert-success {
+    background-color: rgba(32, 201, 151, 0.2) !important;
+    border-color: #20c997 !important;
+    color: #ffffff !important;
+}
+
+/* Estatísticas no modo escuro */
+.dark .stat-item {
+    background-color: #3a3a3a !important;
+}
+
+.dark .stat-value {
+    color: #ffffff !important;
+}
+
+.dark .stat-label {
+    color: #b0b0b0 !important;
+}
+
+/* Bordas e sombras */
+.dark .border {
+    border-color: #444444 !important;
+}
+
+.dark .shadow,
+.dark .shadow-sm {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Transições suaves */
+* {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Scrollbar personalizada para modo escuro */
+.dark ::-webkit-scrollbar {
+    width: 8px;
+}
+
+.dark ::-webkit-scrollbar-track {
+    background: #2d2d2d;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+    background: #555555;
+    border-radius: 4px;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+    background: #777777;
+}
+
+/* Garantir que os botões não desapareçam */
+button {
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.dark button {
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+/* Corrigir problemas específicos da navbar */
+.dark .navbar-nav .nav-link {
+    color: #ffffff !important;
+    opacity: 1 !important;
+}
+
+.dark .navbar-nav button {
+    color: #ffffff !important;
+    opacity: 1 !important;
+    display: inline-flex !important;
+}
+
+/* Corrigir botões do dashboard */
+.dark .header-actions button {
+    color: #ffffff !important;
+    background-color: rgba(13, 110, 253, 0.8) !important;
+    border-color: #0d6efd !important;
+}
+
+.dark .header-actions button:hover {
+    background-color: #0d6efd !important;
+    border-color: #0a58ca !important;
+}
+
+.dark .btn-primary {
+    color: #ffffff !important;
+    background-color: #0d6efd !important;
+    border-color: #0d6efd !important;
+}
+
+.dark .btn-success {
+    color: #ffffff !important;
+    background-color: #198754 !important;
+    border-color: #198754 !important;
+}
+
+.dark .btn-warning {
+    color: #000000 !important;
+    background-color: #ffc107 !important;
+    border-color: #ffc107 !important;
+}
+
+.dark .btn-danger {
+    color: #ffffff !important;
+    background-color: #dc3545 !important;
+    border-color: #dc3545 !important;
+}
+
+.dark .btn-info {
+    color: #ffffff !important;
+    background-color: #0dcaf0 !important;
+    border-color: #0dcaf0 !important;
+}
+
+.dark .btn-secondary {
+    color: #ffffff !important;
+    background-color: #6c757d !important;
+    border-color: #6c757d !important;
+}
+
+/* Garantir que todos os botões tenham texto visível */
+.dark button,
+.dark .btn {
+    color: #ffffff !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.dark button i,
+.dark .btn i {
+    color: inherit !important;
+}
+
+/* Botões específicos do dashboard */
+.dark .modern-btn {
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.5px !important;
+}
+
+.dark .dashboard-header button {
+    color: #ffffff !important;
+    opacity: 1 !important;
+}
+
+/* Correção específica para botões do dashboard - modo claro e escuro */
+.dashboard-btn-fix {
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.5px !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.dashboard-btn-fix i {
+    color: #ffffff !important;
+}
+
+.btn-primary.dashboard-btn-fix {
+    background-color: #0d6efd !important;
+    border-color: #0d6efd !important;
+    color: #ffffff !important;
+}
+
+.btn-success.dashboard-btn-fix {
+    background-color: #198754 !important;
+    border-color: #198754 !important;
+    color: #ffffff !important;
+}
+
+.btn-primary.dashboard-btn-fix:hover {
+    background-color: #0b5ed7 !important;
+    border-color: #0a58ca !important;
+    color: #ffffff !important;
+}
+
+.btn-success.dashboard-btn-fix:hover {
+    background-color: #157347 !important;
+    border-color: #146c43 !important;
+    color: #ffffff !important;
+}
+
+/* Garantir que funcione no modo escuro também */
+.dark .dashboard-btn-fix {
+    color: #ffffff !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.dark .dashboard-btn-fix i {
+    color: #ffffff !important;
+}
+
+.dark .btn-primary.dashboard-btn-fix {
+    background-color: #0d6efd !important;
+    border-color: #0d6efd !important;
+    color: #ffffff !important;
+}
+
+.dark .btn-success.dashboard-btn-fix {
+    background-color: #198754 !important;
+    border-color: #198754 !important;
+    color: #ffffff !important;
+}

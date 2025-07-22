@@ -27,6 +27,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'foto_perfil',
         'is_admin',
         'precisa_trocar_senha',
+        'cpf',
     ];
 
     /**

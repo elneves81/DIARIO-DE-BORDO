@@ -1,66 +1,138 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🚗 Sistema Diário de Bordo
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Sistema web para gerenciamento e controle de viagens corporativas desenvolvido em Laravel.
 
-## About Laravel
+## 📋 Sobre o Sistema
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+O **Diário de Bordo** é uma aplicação completa para controle de viagens corporativas que permite:
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- ✅ **Registro de viagens** com controle de quilometragem
+- ✅ **Dashboard interativo** com estatísticas e gráficos
+- ✅ **Sistema de usuários** com níveis de permissão
+- ✅ **Relatórios** em PDF e Excel
+- ✅ **Interface responsiva** para desktop e mobile
+- ✅ **Validações robustas** para integridade dos dados
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## 🛠️ Tecnologias
 
-## Learning Laravel
+- **Laravel 9.x** - Framework PHP
+- **PHP 8.0+** - Linguagem de programação
+- **MySQL** - Banco de dados
+- **Bootstrap 5.3** - Frontend responsivo
+- **Chart.js** - Gráficos e estatísticas
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## 🚀 Instalação Rápida
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+```bash
+# Clone o repositório
+git clone [url-do-repositorio]
+cd diario-bordo
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+# Instale as dependências
+composer install
+npm install
 
-## Laravel Sponsors
+# Configure o ambiente
+cp .env.example .env
+php artisan key:generate
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+# Configure o banco no .env e execute:
+php artisan migrate
+php artisan db:seed
 
-### Premium Partners
+# Compile os assets e inicie o servidor
+npm run build
+php artisan serve
+```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+## 📖 Funcionalidades Principais
 
-## Contributing
+### Para Usuários
+- **Dashboard** com estatísticas pessoais
+- **Cadastro de viagens** com validações
+- **Visualização** em cards coloridos por status
+- **Filtros avançados** por data, destino, condutor
+- **Relatórios** personalizáveis
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Para Administradores
+- **Gerenciamento de usuários** completo
+- **Acesso a todas as viagens** do sistema
+- **Relatórios globais** com filtros avançados
+- **Sistema de mensagens** e sugestões
 
-## Code of Conduct
+## 🎨 Interface
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+O sistema possui interface moderna e responsiva com:
 
-## Security Vulnerabilities
+- **Cards coloridos** indicando status das viagens:
+  - 🟢 **Verde**: Concluída
+  - 🟡 **Amarelo**: Em andamento  
+  - 🔵 **Azul**: Agendada
+- **Modal de boas-vindas** personalizável
+- **Gráficos interativos** de evolução
+- **Layout adaptativo** para todos os dispositivos
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## 🔒 Segurança
 
-## License
+- **Autenticação** com verificação de email
+- **Rate limiting** para proteção contra ataques
+- **Validações** robustas de dados
+- **CSRF protection** em formulários
+- **Middleware** personalizado para controle de acesso
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## 📊 Relatórios
+
+O sistema oferece relatórios completos em:
+
+- **PDF** - Para impressão e arquivamento
+- **Excel** - Para análise de dados
+- **Filtros** por período, usuário, veículo
+- **Dados consolidados** de quilometragem
+
+## 🌐 Acesso via Rede Local
+
+Para acesso via IP na rede local, configure no `.env`:
+
+```env
+SESSION_DOMAIN=null
+SANCTUM_STATEFUL_DOMAINS=192.168.1.100:8000,localhost:8000
+```
+
+E inicie o servidor:
+
+```bash
+php artisan serve --host=0.0.0.0 --port=8000
+```
+
+## 📚 Documentação
+
+Para documentação completa, consulte o arquivo [`DOCUMENTACAO.md`](DOCUMENTACAO.md) que inclui:
+
+- Guia de instalação detalhado
+- Manual do usuário
+- Guia do administrador
+- Troubleshooting
+- API e endpoints
+- Comandos Artisan
+
+## 🆘 Suporte
+
+Em caso de problemas:
+
+1. Consulte a [documentação completa](DOCUMENTACAO.md)
+2. Verifique os logs em `storage/logs/laravel.log`
+3. Execute comandos de limpeza de cache:
+
+```bash
+php artisan cache:clear
+php artisan config:clear
+php artisan view:clear
+```
+
+## 📝 Licença
+
+Sistema proprietário desenvolvido por **ELN - Soluções**.
+
+---
+
+**Versão**: 1.0.0 | **Laravel**: 9.x | **PHP**: 8.0+

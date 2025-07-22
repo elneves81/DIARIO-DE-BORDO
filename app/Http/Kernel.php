@@ -34,6 +34,7 @@ class Kernel extends HttpKernel
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
             \Illuminate\Session\Middleware\StartSession::class,
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+            \App\Http\Middleware\DebugCsrf::class, // Debug temporário
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
@@ -65,5 +66,7 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'admin' => \App\Http\Middleware\AdminMiddleware::class,
         'forcar_troca_senha' => \App\Http\Middleware\ForcarTrocaSenha::class,
+        'log.admin' => \App\Http\Middleware\LogAdminActions::class,
+        'cache.user' => \App\Http\Middleware\CacheUserData::class,
     ];
 }
