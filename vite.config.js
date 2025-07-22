@@ -28,7 +28,7 @@ export default defineConfig({
         }),
     ],
     build: {
-        outDir: 'dist',
+        outDir: 'public/build',
         emptyOutDir: true,
         manifest: true,
         rollupOptions: {
