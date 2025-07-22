@@ -2,10 +2,6 @@
     "version": 2,
     "builds": [
         {
-            "src": "public/index.php",
-            "use": "vercel-php@0.6.0"
-        },
-        {
             "src": "package.json",
             "use": "@vercel/static-build",
             "config": {
@@ -20,16 +16,7 @@
         },
         {
             "src": "/(.*)",
-            "dest": "/index.php"
+            "dest": "/index.html"
         }
-    ],
-    "env": {
-        "APP_ENV": "production",
-        "APP_DEBUG": "false"
-    },
-    "functions": {
-        "public/index.php": {
-            "runtime": "vercel-php@0.6.0"
-        }
-    }
+    ]
 }
