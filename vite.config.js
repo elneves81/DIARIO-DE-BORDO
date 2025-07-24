@@ -11,6 +11,7 @@ export default defineConfig({
                 // CSS Componentes
                 'resources/css/components/dark-mode.css',
                 'resources/css/components/executive-cards.css',
+                'resources/css/components/executive-navbar.css',
                 'resources/css/components/navbar-fix.css',
                 
                 // JavaScript Principal

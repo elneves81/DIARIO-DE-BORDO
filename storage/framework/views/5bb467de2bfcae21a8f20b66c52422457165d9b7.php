@@ -55,4 +55,4 @@ switch ($width) {
         </div>
     </div>
 </div>
-<?php /**PATH C:\Users\Elber\Documents\GitHub\prototipoSite\diario-bordo\resources\views/components/dropdown.blade.php ENDPATH**/ ?>
+<?php /**PATH C:\Users\elber\OneDrive\Documentos\GitHub\DIARIO-DE-BORDO\resources\views/components/dropdown.blade.php ENDPATH**/ ?>
