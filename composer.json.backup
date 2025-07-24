@@ -1,0 +1,14 @@
+{
+    "name": "diario-de-bordo",
+    "description": "Sistema de Diário de Bordo em Laravel",
+    "type": "project",
+    "require": {
+        "php": "^8.0"
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "php artisan clear-compiled",
+            "php artisan optimize"
+        ]
+    }
+}
