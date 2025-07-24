@@ -1,0 +1,22 @@
+# Railway ignore file
+# Ignore Docker files if they exist
+Dockerfile*
+docker-compose*
+.dockerignore
+
+# Ignore development files
+.git
+.github
+.vscode
+*.log
+.DS_Store
+Thumbs.db
+
+# Ignore local environment
+.env.local
+.env.development
+.env.test
+
+# Ignore build artifacts that should be rebuilt
+node_modules/
+public/build/
