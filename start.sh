@@ -1,45 +1,55 @@
 #!/bin/bash
+set -e
 
-# Script de inicialização para Railway
-echo "🚂 Iniciando aplicação Diário de Bordo no Railway..."
+echo "🚂 Railway Laravel App Starting..."
 
-# Verificar se arquivo .env existe, se não, criar
+# Ensure we're in the right directory
+cd /app 2>/dev/null || cd /workspace 2>/dev/null || cd /var/www 2>/dev/null || echo "Using current directory"
+
+# Create .env if it doesn't exist
 if [ ! -f ".env" ]; then
-    echo "📄 Arquivo .env não encontrado. Criando a partir do .env.example..."
+    echo "📄 Creating .env from .env.example..."
     cp .env.example .env
-    echo "✅ Arquivo .env criado com sucesso"
-else
-    echo "✅ Arquivo .env já existe"
+    echo "✅ .env created"
 fi
 
-# Verificar se APP_KEY está definida
-if grep -q "APP_KEY=$" .env || ! grep -q "APP_KEY=" .env; then
-    echo "🔑 APP_KEY não definida. Gerando nova chave..."
+# Install PHP dependencies if vendor doesn't exist
+if [ ! -d "vendor" ]; then
+    echo "📦 Installing PHP dependencies..."
+    composer install --no-dev --optimize-autoloader --no-interaction
+fi
+
+# Install Node dependencies if node_modules doesn't exist
+if [ ! -d "node_modules" ]; then
+    echo "📦 Installing Node dependencies..."
+    npm ci
+fi
+
+# Build assets if not exist
+if [ ! -d "public/build" ]; then
+    echo "🎨 Building assets..."
+    npm run build
+fi
+
+# Generate APP_KEY if not set
+if ! grep -q "APP_KEY=base64:" .env; then
+    echo "🔑 Generating APP_KEY..."
     php artisan key:generate --force
-    echo "✅ APP_KEY gerada com sucesso"
-else
-    echo "✅ APP_KEY já definida"
 fi
 
-# Executar migrations se banco estiver disponível
+# Run migrations if database is available
 if [ ! -z "$DATABASE_URL" ]; then
-    echo "🗄️ Executando migrations..."
-    php artisan migrate --force
-    echo "✅ Migrations executadas"
-else
-    echo "⚠️ DATABASE_URL não definida, pulando migrations"
+    echo "🗄️ Running migrations..."
+    php artisan migrate --force || echo "⚠️ Migrations failed, continuing..."
 fi
 
-# Limpar e configurar cache
-echo "⚡ Configurando cache..."
-php artisan config:cache
-php artisan route:cache 2>/dev/null || echo "Routes cache skipped"
-php artisan view:cache 2>/dev/null || echo "Views cache skipped"
+# Cache configuration
+echo "⚡ Caching configuration..."
+php artisan config:cache || echo "Config cache skipped"
 
-# Criar link de storage
-echo "🔗 Configurando storage..."
-php artisan storage:link 2>/dev/null || echo "Storage link já existe"
+# Create storage link
+php artisan storage:link 2>/dev/null || echo "Storage link already exists"
 
-# Iniciar servidor
-echo "🚀 Iniciando servidor na porta ${PORT:-8000}..."
+# Start the server
+echo "🚀 Starting server on port ${PORT:-8000}..."
 exec php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
