@@ -22,4 +22,4 @@ php artisan key:generate --force
 echo "==> Running database migrations..."
 php artisan migrate --force
 
-echo "==> Build complete!"
+echo "==> Build complete! Ready for production."
